@@ -605,24 +605,46 @@
         </div>
       </section>
 
-      <!-- Account page -->
-      <section class="page" id="account">
-        <div class="content-card form-card">
-          <h2>My Account</h2>
-          <p>Manage your profile information.</p>
+     
+<!-- Account page -->
+<section class="page" id="account">
+  <div class="content-card form-card">
+    <h2>My Account</h2>
+    <p>Manage your personal CredoConnect profile.</p>
 
-          <label>Full Name</label>
-          <input type="text" value="Britney Tabella">
+    <label for="profileFullName">Full Name</label>
+    <input
+      type="text"
+      id="profileFullName"
+      placeholder="Your full name"
+      required
+    >
 
-          <label>Email Address</label>
-          <input type="email" value="britneytabella2026@example.com">
+    <label for="profileEmail">Email Address</label>
+    <input
+      type="email"
+      id="profileEmail"
+      placeholder="Your email address"
+      disabled
+    >
 
-          <label>Phone Number</label>
-          <input type="tel" value="0712345678">
+    <label for="profilePhone">Phone Number</label>
+    <input
+      type="tel"
+      id="profilePhone"
+      placeholder="Your phone number"
+      required
+    >
 
-          <button class="primary-button full-button" id="saveAccount">Save Changes</button>
-        </div>
-      </section>
+    <button
+      class="primary-button full-button"
+      id="saveAccount"
+      type="button"
+    >
+      Save Changes
+    </button>
+  </div>
+</section>
 
       <!-- Admin dashboard page -->
       <section class="page" id="admin">
