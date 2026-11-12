@@ -3,6 +3,21 @@
 // CREDOCONNECT - MAIN JAVASCRIPT
 // ========================================
 
+// ========================================
+// SUPABASE DATABASE CONNECTION
+// ========================================
+
+const SUPABASE_URL = "https://euwsybgjtuwtzgivugan.supabase.co";
+
+const SUPABASE_ANON_KEY = "sb_publishable_3QmVGhPnif-L8DpzWLcb4g_82dCyNj6";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+console.log("CredoConnect Supabase connection initialized.");
+
 // Navigation between pages
 
 const navLinks = document.querySelectorAll(
