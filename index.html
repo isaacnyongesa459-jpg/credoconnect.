@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071b18">
+  <meta name="description" content="CredoConnect - Your trusted airtime and data platform.">
+  <title>CredoConnect | Airtime & Data</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">C</div>
+        <div>
+          <h2>CredoConnect</h2>
+          <span>Digital Services</span>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="avatar">JD</div>
+        <div>
+          <strong>John Doe</strong>
+          <span>Customer Account</span>
+        </div>
+      </div>
+
+      <nav class="navigation">
+        <p class="nav-label">MAIN MENU</p>
+
+        <a href="#" class="nav-link active" data-page="dashboard">
+          <span>▦</span> Dashboard
+        </a>
+        <a href="#" class="nav-link" data-page="airtime">
+          <span>◉</span> Buy Airtime
+        </a>
+        <a href="#" class="nav-link" data-page="bundles">
+          <span>▤</span> Data Bundles
+        </a>
+        <a href="#" class="nav-link" data-page="bulk">
+          <span>⇧</span> Bulk Top-up
+        </a>
+        <a href="#" class="nav-link" data-page="scheduled">
+          <span>◷</span> Scheduled Top-ups
+        </a>
+
+        <p class="nav-label">ACCOUNT</p>
+
+        <a href="#" class="nav-link" data-page="transactions">
+          <span>↻</span> Transactions
+        </a>
+        <a href="#" class="nav-link" data-page="favourites">
+          <span>♡</span> Favourites
+        </a>
+        <a href="#" class="nav-link" data-page="account">
+          <span>⚙</span> My Account
+        </a>
+
+        <p class="nav-label">ADMINISTRATION</p>
+
+        <a href="#" class="nav-link" data-page="admin">
+          <span>▣</span> Admin Dashboard
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="status-dot"></span>
+        All systems operational
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menuToggle">☰</button>
+          <div>
+            <h1 id="pageTitle">Dashboard</h1>
+            <p>Welcome back, John!</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="icon-button" id="themeToggle" title="Toggle theme">☾</button>
+          <button class="icon-button notification-button" title="Notifications">
+            ♧
+            <span class="notification-dot"></span>
+          </button>
+          <div class="topbar-user">
+            <div class="avatar small-avatar">JD</div>
+            <span>John Doe</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard page -->
+      <section class="page active-page" id="dashboard">
+
+        <div class="welcome-banner">
+          <div>
+            <span class="eyebrow">CREDOCONNECT ACCOUNT</span>
+            <h2>Everything connected.<br>Everything simplified.</h2>
+            <p>Buy airtime and data bundles quickly and securely.</p>
+            <button class="primary-button" data-go="airtime">Buy Airtime Now →</button>
+          </div>
+          <div class="banner-art">◉</div>
+        </div>
+
+        <div class="section-heading">
+          <div>
+            <h2>Account Overview</h2>
+            <p>Here's a summary of your activity.</p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon green">↗</div>
+            <span>Total Transactions</span>
+            <h3 id="totalTransactions">128</h3>
+            <small>All-time transactions</small>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon blue">◉</div>
+            <span>Total Spent</span>
+            <h3 id="totalSpent">KES 12,450</h3>
+            <small>Successful purchases</small>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon purple">✓</div>
+            <span>Successful</span>
+            <h3 id="successfulTransactions">124</h3>
+            <small>Completed transactions</small>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon orange">◷</div>
+            <span>Pending</span>
+            <h3 id="pendingTransactions">4</h3>
+            <small>Awaiting confirmation</small>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="content-card quick-actions">
+            <div class="section-heading">
+              <div>
+                <h2>Quick Actions</h2>
+                <p>What would you like to do today?</p>
+              </div>
+            </div>
+
+            <div class="action-grid">
+              <button class="action-button" data-go="airtime">
+                <span class="action-icon">◉</span>
+                <strong>Buy Airtime</strong>
+                <small>Top up any number</small>
+              </button>
+
+              <button class="action-button" data-go="bundles">
+                <span class="action-icon">▤</span>
+                <strong>Buy Data</strong>
+                <small>Browse data bundles</small>
+              </button>
+
+              <button class="action-button" data-go="bulk">
+                <span class="action-icon">⇧</span>
+                <strong>Bulk Top-up</strong>
+                <small>Multiple numbers</small>
+              </button>
+
+              <button class="action-button" data-go="scheduled">
+                <span class="action-icon">◷</span>
+                <strong>Schedule</strong>
+                <small>Plan future top-ups</small>
+              </button>
+            </div>
+          </div>
+
+          <div class="content-card network-card">
+            <div class="section-heading">
+              <div>
+                <h2>Supported Networks</h2>
+                <p>Choose from your preferred provider.</p>
+              </div>
+            </div>
+
+            <div class="network-list">
+              <div class="network-item"><span class="network-mark safaricom">S</span> Safaricom <span>→</span></div>
+              <div class="network-item"><span class="network-mark airtel">A</span> Airtel <span>→</span></div>
+              <div class="network-item"><span class="network-mark telkom">T</span> Telkom <span>→</span></div>
+              <div class="network-item"><span class="network-mark equitel">E</span> Equitel <span>→</span></div>
+              <div class="network-item"><span class="network-mark faiba">F</span> Faiba <span>→</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <div class="section-heading">
+            <div>
+              <h2>Recent Transactions</h2>
+              <p>Your latest airtime and data purchases.</p>
+            </div>
+            <button class="text-button" data-go="transactions">View All →</button>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Phone Number</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentTransactions">
+                <tr>
+                  <td>Airtime</td>
+                  <td>0712 *** 456</td>
+                  <td>KES 100</td>
+                  <td>Today</td>
+                  <td><span class="status success">Successful</span></td>
+                </tr>
+                <tr>
+                  <td>Data Bundle</td>
+                  <td>0722 *** 789</td>
+                  <td>KES 250</td>
+                  <td>Yesterday</td>
+                  <td><span class="status success">Successful</span></td>
+                </tr>
+                <tr>
+                  <td>Airtime</td>
+                  <td>0733 *** 123</td>
+                  <td>KES 50</td>
+                  <td>Yesterday</td>
+                  <td><span class="status pending">Pending</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Airtime page -->
+      <section class="page" id="airtime">
+        <div class="content-card form-card">
+          <h2>Buy Airtime</h2>
+          <p>Top up any supported Kenyan mobile number.</p>
+
+          <form id="airtimeForm">
+            <label for="airtimePhone">Phone Number</label>
+            <input id="airtimePhone" type="tel" placeholder="e.g. 0712345678" required>
+
+            <label for="airtimeNetwork">Network Provider</label>
+            <select id="airtimeNetwork" required>
+              <option value="">Select network</option>
+              <option>Safaricom</option>
+              <option>Airtel</option>
+              <option>Telkom</option>
+              <option>Equitel</option>
+              <option>Faiba</option>
+            </select>
+
+            <label for="airtimeAmount">Amount (KES)</label>
+            <input id="airtimeAmount" type="number" min="10" placeholder="Enter amount" required>
+
+            <button class="primary-button full-button" type="submit">Continue to Payment</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Data bundles page -->
+      <section class="page" id="bundles">
+        <div class="content-card form-card">
+          <h2>Buy Data Bundles</h2>
+          <p>Select a network and bundle for your phone.</p>
+
+          <form id="bundleForm">
+            <label for="bundlePhone">Phone Number</label>
+            <input id="bundlePhone" type="tel" placeholder="e.g. 0712345678" required>
+
+            <label for="bundleNetwork">Network Provider</label>
+            <select id="bundleNetwork" required>
+              <option value="">Select network</option>
+              <option>Safaricom</option>
+              <option>Airtel</option>
+              <option>Telkom</option>
+              <option>Equitel</option>
+              <option>Faiba</option>
+            </select>
+
+            <label for="bundleChoice">Select Bundle</label>
+            <select id="bundleChoice" required>
+              <option value="">Choose a bundle</option>
+              <option value="50">Daily Bundle - KES 50</option>
+              <option value="100">Weekly Bundle - KES 100</option>
+              <option value="250">Monthly Bundle - KES 250</option>
+              <option value="500">Monthly Bundle - KES 500</option>
+            </select>
+
+            <button class="primary-button full-button" type="submit">Continue to Payment</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Bulk top-up page -->
+      <section class="page" id="bulk">
+        <div class="content-card form-card">
+          <h2>Bulk Top-up</h2>
+          <p>Prepare airtime purchases for multiple numbers.</p>
+
+          <form id="bulkForm">
+            <label for="bulkNumbers">Phone Numbers</label>
+            <textarea id="bulkNumbers" rows="6" placeholder="Enter one phone number per line" required></textarea>
+
+            <label for="bulkAmount">Amount per Number (KES)</label>
+            <input id="bulkAmount" type="number" min="10" placeholder="Enter amount" required>
+
+            <button class="primary-button full-button" type="submit">Review Bulk Top-up</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Scheduled top-ups page -->
+      <section class="page" id="scheduled">
+        <div class="content-card form-card">
+          <h2>Scheduled Top-ups</h2>
+          <p>Set up a top-up for a future date.</p>
+
+          <form id="scheduleForm">
+            <label for="schedulePhone">Phone Number</label>
+            <input id="schedulePhone" type="tel" placeholder="e.g. 0712345678" required>
+
+            <label for="scheduleAmount">Amount (KES)</label>
+            <input id="scheduleAmount" type="number" min="10" required>
+
+            <label for="scheduleDate">Schedule Date</label>
+            <input id="scheduleDate" type="date" required>
+
+            <button class="primary-button full-button" type="submit">Save Schedule</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Transactions page -->
+      <section class="page" id="transactions">
+        <div class="content-card">
+          <div class="section-heading">
+            <div>
+              <h2>Transaction History</h2>
+              <p>Review your purchases and payment records.</p>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Transaction</th>
+                  <th>Phone Number</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="allTransactions">
+                <tr>
+                  <td>Airtime</td>
+                  <td>0712 *** 456</td>
+                  <td>KES 100</td>
+                  <td>Today</td>
+                  <td><span class="status success">Successful</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Favourites page -->
+      <section class="page" id="favourites">
+        <div class="content-card">
+          <h2>Favourites</h2>
+          <p>Your saved phone numbers will appear here.</p>
+          <div class="empty-state">♡<br><strong>No favourites yet</strong><br>Save frequently used numbers for quicker top-ups.</div>
+        </div>
+      </section>
+
+      <!-- Account page -->
+      <section class="page" id="account">
+        <div class="content-card form-card">
+          <h2>My Account</h2>
+          <p>Manage your profile information.</p>
+
+          <label>Full Name</label>
+          <input type="text" value="John Doe">
+
+          <label>Email Address</label>
+          <input type="email" value="john@example.com">
+
+          <label>Phone Number</label>
+          <input type="tel" value="0712345678">
+
+          <button class="primary-button full-button" id="saveAccount">Save Changes</button>
+        </div>
+      </section>
+
+      <!-- Admin dashboard page -->
+      <section class="page" id="admin">
+        <div class="welcome-banner admin-banner">
+          <div>
+            <span class="eyebrow">ADMINISTRATION</span>
+            <h2>Platform Management</h2>
+            <p>Monitor activity and manage the CredoConnect platform.</p>
+          </div>
+          <div class="banner-art">▣</div>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon green">◎</div>
+            <span>Total Users</span>
+            <h3>1,248</h3>
+            <small>Registered accounts</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon blue">↗</div>
+            <span>Transactions</span>
+            <h3>8,420</h3>
+            <small>Platform activity</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon purple">✓</div>
+            <span>Successful</span>
+            <h3>8,210</h3>
+            <small>Completed transactions</small>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon orange">◷</div>
+            <span>Pending</span>
+            <h3>210</h3>
+            <small>Awaiting processing</small>
+          </article>
+        </div>
+
+        <div class="content-card">
+          <h2>Administration Sections</h2>
+          <div class="admin-links">
+            <div>▦ <strong>Overview</strong><span>Platform statistics</span></div>
+            <div>↻ <strong>Transactions</strong><span>Review transaction records</span></div>
+            <div>▤ <strong>Networks & Pricing</strong><span>Manage network settings</span></div>
+            <div>♙ <strong>Security & Audit Logs</strong><span>Review administrative activity</span></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 CredoConnect. All rights reserved.</span>
+        <span>Connecting you to what matters.</span>
+      </footer>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
