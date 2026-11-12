@@ -449,3 +449,27 @@ document.getElementById("saveAccount").addEventListener("click", () => {
 renderTransactions();
 
 console.log("CredoConnect loaded successfully.");
+
+// ========================================
+// CREDOCONNECT APP - SERVICE WORKER
+// ========================================
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./service-worker.js")
+      .then(registration => {
+        console.log(
+          "CredoConnect service worker activated:",
+          registration.scope
+        );
+      })
+      .catch(error => {
+        console.error(
+          "Service worker registration failed:",
+          error
+        );
+      });
+  });
+}
+
