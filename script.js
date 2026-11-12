@@ -658,6 +658,165 @@ if ("serviceWorker" in navigator) {
 }
 
 // ======================================================
+// 19B. CUSTOMER REGISTRATION AND LOGIN
+// ======================================================
+
+// Switch between Login and Registration forms.
+
+const loginPanel = getElement("loginPanel");
+const signupPanel = getElement("signupPanel");
+
+addSafeListener(getElement("showSignup"), "click", () => {
+  if (loginPanel) loginPanel.hidden = true;
+  if (signupPanel) signupPanel.hidden = false;
+});
+
+addSafeListener(getElement("showLogin"), "click", () => {
+  if (signupPanel) signupPanel.hidden = true;
+  if (loginPanel) loginPanel.hidden = false;
+});
+
+// Customer registration.
+
+addSafeListener(
+  getElement("authSignupForm"),
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    if (!window.db) {
+      showToast("Database connection is unavailable.");
+      return;
+    }
+
+    const fullName = getElement("signupName").value.trim();
+    const phone = normalizePhone(getElement("signupPhone").value);
+    const email = getElement("signupEmail").value.trim();
+    const password = getElement("signupPassword").value;
+
+    if (!validKenyanPhone(phone)) {
+      showToast("Please enter a valid Kenyan phone number.");
+      return;
+    }
+
+    if (password.length < 8) {
+      showToast("Password must contain at least 8 characters.");
+      return;
+    }
+
+    const submitButton = event.submitter;
+
+    if (submitButton) submitButton.disabled = true;
+
+    try {
+      const { data, error } = await window.db.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+            phone: phone
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        showToast("Account created successfully!");
+
+        event.target.reset();
+
+        showPage("dashboard");
+      } else {
+        showToast(
+          "Account created! Check your email to verify your account."
+        );
+      }
+
+    } catch (error) {
+      console.error("Registration error:", error);
+      showToast(error.message || "Registration failed.");
+
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
+  }
+);
+
+// Customer login.
+
+addSafeListener(
+  getElement("authLoginForm"),
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    if (!window.db) {
+      showToast("Database connection is unavailable.");
+      return;
+    }
+
+    const email = getElement("loginEmail").value.trim();
+    const password = getElement("loginPassword").value;
+
+    const submitButton = event.submitter;
+
+    if (submitButton) submitButton.disabled = true;
+
+    try {
+      const { data, error } = await window.db.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) throw error;
+
+      showToast("Welcome back!");
+
+      event.target.reset();
+
+      showPage("dashboard");
+
+    } catch (error) {
+      console.error("Login error:", error);
+      showToast(error.message || "Login failed.");
+
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
+  }
+);
+
+// Check whether a customer is already signed in.
+
+async function checkCustomerSession() {
+  if (!window.db) {
+    showPage("auth");
+    showToast("Unable to connect to the database.");
+    return;
+  }
+
+  try {
+    const { data, error } = await window.db.auth.getSession();
+
+    if (error) throw error;
+
+    if (data.session) {
+      showPage("dashboard");
+    } else {
+      showPage("auth");
+    }
+
+  } catch (error) {
+    console.error("Session check failed:", error);
+    showPage("auth");
+  }
+}
+
+checkCustomerSession();
+
+// ======================================================
 // 20. INITIAL APPLICATION STARTUP
 // ======================================================
 
