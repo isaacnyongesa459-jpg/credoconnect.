@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "credoconnect-v1";
+const CACHE_NAME = "credoconnect-v2";
 
 const APP_FILES = [
   "./",
