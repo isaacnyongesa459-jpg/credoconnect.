@@ -93,7 +93,9 @@ function showPage(pageId) {
 
   // Display selected page.
   targetPage.classList.add("active-page");
-
+if (pageId === "account") {
+  loadCustomerProfile();
+}
   // Update active navigation links.
   navLinks.forEach(link => {
     link.classList.toggle(
