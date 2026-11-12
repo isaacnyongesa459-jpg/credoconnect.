@@ -4,7 +4,7 @@
 // ========================================
 
 // Navigation between pages
-const navLinks = document.querySelectorAll(".nav-link");
+const navLinks = document.querySelectorAll(".nav-link, .mobile-nav-link");
 const pages = document.querySelectorAll(".page");
 const pageTitle = document.getElementById("pageTitle");
 const sidebar = document.getElementById("sidebar");
