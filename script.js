@@ -41,9 +41,22 @@ navLinks.forEach(link => {
 });
 
 // Quick action buttons
+
 document.querySelectorAll("[data-go]").forEach(button => {
   button.addEventListener("click", () => {
+
+    // Open the requested page
     showPage(button.dataset.go);
+
+    // Automatically select the network when a network button is clicked
+    if (button.dataset.network) {
+      const airtimeNetwork = document.getElementById("airtimeNetwork");
+
+      if (airtimeNetwork) {
+        airtimeNetwork.value = button.dataset.network;
+      }
+    }
+
   });
 });
 
