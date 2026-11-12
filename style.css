@@ -832,3 +832,430 @@ body.light-theme .action-button {
     gap: 7px;
   }
 }
+
+/* ========================================
+   CREDOCONNECT DASHBOARD UPGRADE
+======================================== */
+
+/* Welcome banner */
+.upgraded-banner {
+  position: relative;
+  gap: 25px;
+  padding: 32px;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(16, 185, 129, .20), transparent 30%),
+    linear-gradient(120deg, #064e3b, #0f3931 65%, #102c29);
+  border: 1px solid rgba(52, 211, 153, .25);
+  border-radius: 22px;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2;
+  max-width: 570px;
+}
+
+.welcome-tag {
+  display: inline-block;
+  padding: 7px 12px;
+  border: 1px solid rgba(110, 231, 183, .3);
+  background: rgba(16, 185, 129, .13);
+  color: #6ee7b7;
+  border-radius: 30px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.upgraded-banner h2 {
+  margin: 17px 0 12px;
+  font-size: clamp(25px, 3vw, 34px);
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.upgraded-banner .welcome-content p {
+  max-width: 520px;
+  line-height: 1.8;
+  color: #c0ded2;
+  font-size: 13px;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+  margin-top: 22px;
+}
+
+.welcome-actions .primary-button {
+  padding: 13px 18px;
+}
+
+.secondary-button {
+  padding: 12px 17px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .08);
+  color: white;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: .2s;
+}
+
+.secondary-button:hover {
+  background: rgba(255, 255, 255, .17);
+}
+
+/* Network launcher */
+.network-launcher {
+  position: relative;
+  z-index: 2;
+  min-width: 265px;
+  padding: 20px;
+  background: rgba(3, 20, 17, .55);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 17px;
+  backdrop-filter: blur(12px);
+}
+
+.network-launcher h3 {
+  margin: 0 0 16px;
+  color: #6ee7b7;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.network-launch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.network-launch-grid button {
+  min-height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, .055);
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 11px;
+  color: white;
+  font-size: 10px;
+  font-weight: 650;
+  transition: .2s;
+}
+
+.network-launch-grid button:hover {
+  background: rgba(16, 185, 129, .17);
+  border-color: #34d399;
+  transform: translateY(-2px);
+}
+
+.network-launch-grid .network-mark {
+  width: 30px;
+  height: 30px;
+}
+
+/* Service cards */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  min-height: 165px;
+  padding: 19px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: transform .2s, border-color .2s, background .2s;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  background: var(--surface-2);
+}
+
+.service-icon {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.service-green {
+  background: rgba(32, 189, 131, .15);
+  color: #45dda4;
+}
+
+.service-blue {
+  background: rgba(65, 155, 235, .15);
+  color: #70b9ff;
+}
+
+.service-purple {
+  background: rgba(165, 119, 239, .15);
+  color: #bda0ff;
+}
+
+.service-orange {
+  background: rgba(241, 161, 75, .15);
+  color: #ffbc70;
+}
+
+.service-card strong {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.service-card span:not(.service-icon) {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.service-card small {
+  margin-top: 11px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Promotional strip */
+.promo-strip {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 17px 20px;
+  margin: 25px 0;
+  border: 1px solid rgba(32, 189, 131, .25);
+  border-radius: 15px;
+  background: linear-gradient(100deg, rgba(32, 189, 131, .11), var(--surface));
+}
+
+.promo-icon {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(32, 189, 131, .16);
+  color: #45dda4;
+  font-size: 23px;
+}
+
+.promo-content {
+  flex: 1;
+}
+
+.promo-content strong {
+  font-size: 13px;
+}
+
+.promo-content p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.promo-strip .primary-button {
+  flex-shrink: 0;
+}
+
+/* Lower dashboard layout */
+.upgraded-dashboard-grid {
+  grid-template-columns: minmax(260px, .85fr) minmax(0, 1.5fr);
+  align-items: stretch;
+  gap: 17px;
+  margin-top: 22px;
+}
+
+.favourites-card,
+.recent-card {
+  min-width: 0;
+  border-radius: 17px;
+}
+
+.favourite-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.favourite-item:last-child {
+  border-bottom: 0;
+}
+
+.favourite-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.favourite-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.favourite-details strong {
+  font-size: 11px;
+}
+
+.favourite-details span {
+  color: var(--muted);
+  font-size: 10px;
+  font-family: monospace;
+}
+
+.favourite-buy {
+  padding: 8px 10px;
+  background: rgba(32, 189, 131, .13);
+  border: 1px solid rgba(32, 189, 131, .2);
+  color: #45dda4;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.favourite-buy:hover {
+  background: rgba(32, 189, 131, .25);
+}
+
+.recent-card table td,
+.recent-card table th {
+  padding: 14px 9px;
+}
+
+.recent-card .section-heading {
+  gap: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1150px) {
+  .upgraded-banner {
+    align-items: stretch;
+  }
+
+  .network-launcher {
+    min-width: 225px;
+  }
+
+  .service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .upgraded-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .upgraded-banner {
+    flex-direction: column;
+    padding: 23px;
+  }
+
+  .network-launcher {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .network-launch-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .network-launch-grid button {
+    font-size: 9px;
+  }
+
+  .welcome-actions {
+    align-items: stretch;
+  }
+
+  .welcome-actions button {
+    flex: 1;
+  }
+
+  .promo-strip {
+    flex-wrap: wrap;
+  }
+
+  .promo-strip .primary-button {
+    width: 100%;
+  }
+
+  .service-grid {
+    gap: 10px;
+  }
+
+  .service-card {
+    min-height: 155px;
+    padding: 14px;
+  }
+
+  .recent-card .section-heading {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 420px) {
+  .network-launch-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .welcome-actions {
+    flex-direction: column;
+  }
+
+  .welcome-actions button {
+    width: 100%;
+  }
+
+  .service-card strong {
+    font-size: 12px;
+  }
+}
+
+/* Light theme compatibility */
+body.light-theme .service-card {
+  color: var(--text);
+}
+
+body.light-theme .promo-strip {
+  background: linear-gradient(100deg, #e8f8ef, #ffffff);
+}
+
+body.light-theme .favourite-item {
+  border-color: var(--border);
+}
+
+body.light-theme .favourite-details strong {
+  color: var(--text);
+}
