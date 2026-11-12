@@ -4,42 +4,79 @@
 // ========================================
 
 // Navigation between pages
-const navLinks = document.querySelectorAll(".nav-link, .mobile-nav-link");
+
+const navLinks = document.querySelectorAll(
+  ".nav-link, .mobile-nav-link"
+);
+
 const pages = document.querySelectorAll(".page");
 const pageTitle = document.getElementById("pageTitle");
 const sidebar = document.getElementById("sidebar");
 
 function showPage(pageId) {
+
   const targetPage = document.getElementById(pageId);
 
-  if (!targetPage) return;
+  if (!targetPage) {
+    console.error("Page not found:", pageId);
+    return;
+  }
 
-  pages.forEach(page => page.classList.remove("active-page"));
+  // Hide all pages
+  pages.forEach(page => {
+    page.classList.remove("active-page");
+  });
+
+  // Show selected page
   targetPage.classList.add("active-page");
 
+  // Update active navigation buttons
   navLinks.forEach(link => {
-    link.classList.toggle("active", link.dataset.page === pageId);
+    link.classList.toggle(
+      "active",
+      link.dataset.page === pageId
+    );
   });
 
-  const activeLink = document.querySelector(
-    `.nav-link[data-page="${pageId}"]`
-  );
+  // Update page heading
+  if (pageTitle) {
+    const activeLink = document.querySelector(
+      `.nav-link[data-page="${pageId}"]`
+    );
 
-  pageTitle.textContent = activeLink
-    ? activeLink.textContent.trim()
-    : pageId.charAt(0).toUpperCase() + pageId.slice(1);
+    pageTitle.textContent = activeLink
+      ? activeLink.textContent.trim()
+      : pageId.charAt(0).toUpperCase() + pageId.slice(1);
+  }
 
-  sidebar.classList.remove("open");
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  // Close mobile sidebar
+  if (sidebar) {
+    sidebar.classList.remove("open");
+  }
+
+  // Return to top
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
+// Handle desktop and mobile navigation
 navLinks.forEach(link => {
-  link.addEventListener("click", event => {
-    event.preventDefault();
-    showPage(link.dataset.page);
-  });
-});
 
+  link.addEventListener("click", function(event) {
+
+    event.preventDefault();
+
+    const pageId = this.dataset.page;
+
+    if (pageId) {
+      showPage(pageId);
+    }
+
+  });
+
+});
 // Quick action buttons
 
 document.querySelectorAll("[data-go]").forEach(button => {
