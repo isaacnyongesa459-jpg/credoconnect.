@@ -589,19 +589,128 @@ addSafeListener(
   }
 );
 
+
 // ======================================================
-// 17. ACCOUNT SETTINGS
+// 17. CUSTOMER ACCOUNT PROFILE
 // ======================================================
+
+// Load the signed-in customer's profile.
+
+async function loadCustomerProfile() {
+  if (!window.db) {
+    showToast("Database connection unavailable.");
+    return;
+  }
+
+  try {
+    const { data: userData, error: userError } =
+      await window.db.auth.getUser();
+
+    if (userError) throw userError;
+
+    const user = userData.user;
+
+    if (!user) {
+      showPage("auth");
+      return;
+    }
+
+    const { data: profile, error } = await window.db
+      .from("profiles")
+      .select("full_name, phone")
+      .eq("id", user.id)
+      .single();
+
+    if (error) throw error;
+
+    getElement("profileFullName").value =
+      profile.full_name || user.user_metadata?.full_name || "";
+
+    getElement("profileEmail").value = user.email || "";
+
+    getElement("profilePhone").value =
+      profile.phone || user.user_metadata?.phone || "";
+
+    console.log("Customer profile loaded successfully.");
+
+  } catch (error) {
+    console.error("Profile loading error:", error);
+    showToast("Unable to load your profile.");
+  }
+}
+
+// Save changes to the customer's profile.
 
 addSafeListener(
   getElement("saveAccount"),
   "click",
-  () => {
-    showToast(
-      "Account editing will be connected to your profile after authentication is implemented."
+  async () => {
+    if (!window.db) {
+      showToast("Database connection unavailable.");
+      return;
+    }
+
+    const fullName = getElement("profileFullName").value.trim();
+
+    const phone = normalizePhone(
+      getElement("profilePhone").value
     );
+
+    if (!fullName) {
+      showToast("Please enter your full name.");
+      return;
+    }
+
+    if (!validKenyanPhone(phone)) {
+      showToast("Please enter a valid Kenyan phone number.");
+      return;
+    }
+
+    const button = getElement("saveAccount");
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+      const { data: userData, error: userError } =
+        await window.db.auth.getUser();
+
+      if (userError) throw userError;
+
+      const user = userData.user;
+
+      if (!user) {
+        showPage("auth");
+        return;
+      }
+
+      const { error } = await window.db
+        .from("profiles")
+        .update({
+          full_name: fullName,
+          phone: phone
+        })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      showToast("Your profile has been updated!");
+
+      console.log("Customer profile updated successfully.");
+
+    } catch (error) {
+      console.error("Profile saving error:", error);
+      showToast(error.message || "Unable to save profile.");
+
+    } finally {
+      button.disabled = false;
+      button.textContent = "Save Changes";
+    }
   }
 );
+
+
+
 
 // ======================================================
 // 18. SUPABASE CONNECTION TEST HELPER
