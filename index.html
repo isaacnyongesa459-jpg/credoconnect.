@@ -100,157 +100,255 @@
         </div>
       </header>
 
-      <!-- Dashboard page -->
-      <section class="page active-page" id="dashboard">
+  
+      
+<!-- Dashboard page -->
+<section class="page active-page" id="dashboard">
 
-        <div class="welcome-banner">
-          <div>
-            <span class="eyebrow">CREDOCONNECT ACCOUNT</span>
-            <h2>Everything connected.<br>Everything simplified.</h2>
-            <p>Buy airtime and data bundles quickly and securely.</p>
-            <button class="primary-button" data-go="airtime">Buy Airtime Now →</button>
-          </div>
-          <div class="banner-art">◉</div>
+  <!-- Welcome Banner -->
+  <div class="welcome-banner upgraded-banner">
+    <div class="welcome-content">
+      <span class="welcome-tag">✦ CREDOCONNECT KENYA</span>
+      <h2>Welcome to CredoConnect!</h2>
+      <p>
+        Top up airtime and internet bundles across Safaricom, Airtel,
+        Telkom, Equitel and Faiba. Convenient mobile services, all in one place.
+      </p>
+
+      <div class="welcome-actions">
+        <button class="primary-button" data-go="airtime">
+          ◉ Buy Airtime Now
+        </button>
+        <button class="secondary-button" data-go="bundles">
+          ▤ Browse Data Bundles
+        </button>
+      </div>
+    </div>
+
+    <div class="network-launcher">
+      <h3>CHOOSE YOUR NETWORK</h3>
+
+      <div class="network-launch-grid">
+        <button data-go="airtime">
+          <span class="network-mark safaricom">S</span>
+          Safaricom
+        </button>
+
+        <button data-go="airtime">
+          <span class="network-mark airtel">A</span>
+          Airtel
+        </button>
+
+        <button data-go="airtime">
+          <span class="network-mark telkom">T</span>
+          Telkom
+        </button>
+
+        <button data-go="airtime">
+          <span class="network-mark equitel">E</span>
+          Equitel
+        </button>
+
+        <button data-go="airtime">
+          <span class="network-mark faiba">F</span>
+          Faiba
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Overview -->
+  <div class="section-heading">
+    <div>
+      <h2>Account Overview</h2>
+      <p>Your account activity at a glance.</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-icon green">↗</div>
+      <span>Total Transactions</span>
+      <h3 id="totalTransactions">128</h3>
+      <small>All-time transactions</small>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon blue">◉</div>
+      <span>Total Spent</span>
+      <h3 id="totalSpent">KES 12,450</h3>
+      <small>Successful purchases</small>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon purple">✓</div>
+      <span>Successful</span>
+      <h3 id="successfulTransactions">124</h3>
+      <small>Completed transactions</small>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon orange">◷</div>
+      <span>Pending</span>
+      <h3 id="pendingTransactions">4</h3>
+      <small>Awaiting confirmation</small>
+    </article>
+  </div>
+
+  <!-- Quick Services -->
+  <div class="section-heading">
+    <div>
+      <h2>Our Services</h2>
+      <p>Choose what you would like to do.</p>
+    </div>
+  </div>
+
+  <div class="service-grid">
+
+    <button class="service-card" data-go="airtime">
+      <div class="service-icon service-green">◉</div>
+      <strong>Buy Airtime</strong>
+      <span>Instant mobile top-ups</span>
+      <small>KES 10 – 10,000</small>
+    </button>
+
+    <button class="service-card" data-go="bundles">
+      <div class="service-icon service-blue">▤</div>
+      <strong>Internet & SMS</strong>
+      <span>Browse available bundles</span>
+      <small>Daily, weekly and monthly</small>
+    </button>
+
+    <button class="service-card" data-go="bulk">
+      <div class="service-icon service-purple">⇧</div>
+      <strong>Family & Bulk</strong>
+      <span>Manage multiple numbers</span>
+      <small>Bulk top-up requests</small>
+    </button>
+
+    <button class="service-card" data-go="scheduled">
+      <div class="service-icon service-orange">◷</div>
+      <strong>Auto-Schedule</strong>
+      <span>Plan future top-ups</span>
+      <small>Scheduled purchases</small>
+    </button>
+
+  </div>
+
+  <!-- Promotional Information -->
+  <div class="promo-strip">
+    <div class="promo-icon">✦</div>
+
+    <div class="promo-content">
+      <strong>Simple, transparent pricing</strong>
+      <p>
+        Review your purchase amount and any applicable service fees
+        before proceeding to payment.
+      </p>
+    </div>
+
+    <button class="primary-button" data-go="airtime">
+      Get Started →
+    </button>
+  </div>
+
+  <!-- Favourites and Transactions -->
+  <div class="dashboard-grid upgraded-dashboard-grid">
+
+    <!-- Favourite Recipients -->
+    <div class="content-card favourites-card">
+      <div class="section-heading">
+        <div>
+          <h2>♡ Favourite Recipients</h2>
+          <p>Your frequently used numbers.</p>
         </div>
 
-        <div class="section-heading">
-          <div>
-            <h2>Account Overview</h2>
-            <p>Here's a summary of your activity.</p>
-          </div>
+        <button class="text-button" data-go="favourites">
+          Manage →
+        </button>
+      </div>
+
+      <div class="favourite-item">
+        <div class="favourite-avatar safaricom">S</div>
+        <div class="favourite-details">
+          <strong>My Safaricom</strong>
+          <span>0712 *** 456</span>
+        </div>
+        <button class="favourite-buy" data-go="airtime">Top Up</button>
+      </div>
+
+      <div class="favourite-item">
+        <div class="favourite-avatar airtel">A</div>
+        <div class="favourite-details">
+          <strong>Family Number</strong>
+          <span>0733 *** 123</span>
+        </div>
+        <button class="favourite-buy" data-go="airtime">Top Up</button>
+      </div>
+
+      <div class="favourite-item">
+        <div class="favourite-avatar telkom">T</div>
+        <div class="favourite-details">
+          <strong>Work Number</strong>
+          <span>0770 *** 789</span>
+        </div>
+        <button class="favourite-buy" data-go="airtime">Top Up</button>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="content-card recent-card">
+      <div class="section-heading">
+        <div>
+          <h2>Recent Purchases</h2>
+          <p>Your latest transaction records.</p>
         </div>
 
-        <div class="stats-grid">
-          <article class="stat-card">
-            <div class="stat-icon green">↗</div>
-            <span>Total Transactions</span>
-            <h3 id="totalTransactions">128</h3>
-            <small>All-time transactions</small>
-          </article>
+        <button class="text-button" data-go="transactions">
+          View All →
+        </button>
+      </div>
 
-          <article class="stat-card">
-            <div class="stat-icon blue">◉</div>
-            <span>Total Spent</span>
-            <h3 id="totalSpent">KES 12,450</h3>
-            <small>Successful purchases</small>
-          </article>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Transaction</th>
+              <th>Phone Number</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
 
-          <article class="stat-card">
-            <div class="stat-icon purple">✓</div>
-            <span>Successful</span>
-            <h3 id="successfulTransactions">124</h3>
-            <small>Completed transactions</small>
-          </article>
+          <tbody id="recentTransactions">
+            <tr>
+              <td>Airtime</td>
+              <td>0712 *** 456</td>
+              <td>KES 100</td>
+              <td><span class="status success">Successful</span></td>
+            </tr>
 
-          <article class="stat-card">
-            <div class="stat-icon orange">◷</div>
-            <span>Pending</span>
-            <h3 id="pendingTransactions">4</h3>
-            <small>Awaiting confirmation</small>
-          </article>
-        </div>
+            <tr>
+              <td>Data Bundle</td>
+              <td>0722 *** 789</td>
+              <td>KES 250</td>
+              <td><span class="status success">Successful</span></td>
+            </tr>
 
-        <div class="dashboard-grid">
-          <div class="content-card quick-actions">
-            <div class="section-heading">
-              <div>
-                <h2>Quick Actions</h2>
-                <p>What would you like to do today?</p>
-              </div>
-            </div>
+            <tr>
+              <td>Airtime</td>
+              <td>0733 *** 123</td>
+              <td>KES 50</td>
+              <td><span class="status pending">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-            <div class="action-grid">
-              <button class="action-button" data-go="airtime">
-                <span class="action-icon">◉</span>
-                <strong>Buy Airtime</strong>
-                <small>Top up any number</small>
-              </button>
+  </div>
+</section>
 
-              <button class="action-button" data-go="bundles">
-                <span class="action-icon">▤</span>
-                <strong>Buy Data</strong>
-                <small>Browse data bundles</small>
-              </button>
-
-              <button class="action-button" data-go="bulk">
-                <span class="action-icon">⇧</span>
-                <strong>Bulk Top-up</strong>
-                <small>Multiple numbers</small>
-              </button>
-
-              <button class="action-button" data-go="scheduled">
-                <span class="action-icon">◷</span>
-                <strong>Schedule</strong>
-                <small>Plan future top-ups</small>
-              </button>
-            </div>
-          </div>
-
-          <div class="content-card network-card">
-            <div class="section-heading">
-              <div>
-                <h2>Supported Networks</h2>
-                <p>Choose from your preferred provider.</p>
-              </div>
-            </div>
-
-            <div class="network-list">
-              <div class="network-item"><span class="network-mark safaricom">S</span> Safaricom <span>→</span></div>
-              <div class="network-item"><span class="network-mark airtel">A</span> Airtel <span>→</span></div>
-              <div class="network-item"><span class="network-mark telkom">T</span> Telkom <span>→</span></div>
-              <div class="network-item"><span class="network-mark equitel">E</span> Equitel <span>→</span></div>
-              <div class="network-item"><span class="network-mark faiba">F</span> Faiba <span>→</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="content-card">
-          <div class="section-heading">
-            <div>
-              <h2>Recent Transactions</h2>
-              <p>Your latest airtime and data purchases.</p>
-            </div>
-            <button class="text-button" data-go="transactions">View All →</button>
-          </div>
-
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Transaction</th>
-                  <th>Phone Number</th>
-                  <th>Amount</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="recentTransactions">
-                <tr>
-                  <td>Airtime</td>
-                  <td>0712 *** 456</td>
-                  <td>KES 100</td>
-                  <td>Today</td>
-                  <td><span class="status success">Successful</span></td>
-                </tr>
-                <tr>
-                  <td>Data Bundle</td>
-                  <td>0722 *** 789</td>
-                  <td>KES 250</td>
-                  <td>Yesterday</td>
-                  <td><span class="status success">Successful</span></td>
-                </tr>
-                <tr>
-                  <td>Airtime</td>
-                  <td>0733 *** 123</td>
-                  <td>KES 50</td>
-                  <td>Yesterday</td>
-                  <td><span class="status pending">Pending</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
 
       <!-- Airtime page -->
       <section class="page" id="airtime">
