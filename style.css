@@ -1259,3 +1259,67 @@ body.light-theme .favourite-item {
 body.light-theme .favourite-details strong {
   color: var(--text);
 }
+/* =====================================
+   MOBILE APP BOTTOM NAVIGATION
+===================================== */
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px 8px;
+    z-index: 9999;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.06);
+  }
+
+  .mobile-nav-link {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-decoration: none;
+    color: #89938d;
+    font-size: 12px;
+    font-weight: 500;
+    height: 100%;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-nav-link span {
+    font-size: 23px;
+    line-height: 1;
+  }
+
+  .mobile-nav-link small {
+    font-size: 11px;
+  }
+
+  .mobile-nav-link.active {
+    color: #174b35;
+    font-weight: 700;
+  }
+
+  .mobile-nav-link.active span {
+    transform: translateY(-2px);
+  }
+
+  body {
+    padding-bottom: 80px;
+  }
+
+}
