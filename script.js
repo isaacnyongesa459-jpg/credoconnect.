@@ -3,119 +3,26 @@
 // CREDOCONNECT - MAIN JAVASCRIPT
 // ========================================
 
-// ========================================
-// SUPABASE DATABASE CONNECTION
-// ========================================
+ // ========================================
+ // SUPABASE DATABASE CONNECTION
+ // ========================================
 
 const SUPABASE_URL = "https://euwsybgjtuwtzgivugan.supabase.co";
 
 const SUPABASE_ANON_KEY = "sb_publishable_3QmVGhPnif-L8DpzWLcb4g_82dCyNj6";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+if (window.supabase) {
+  window.db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
 
-console.log("CredoConnect Supabase connection initialized.");
-
-// Navigation between pages
-
-const navLinks = document.querySelectorAll(
-  ".nav-link, .mobile-nav-link"
-);
-
-const pages = document.querySelectorAll(".page");
-const pageTitle = document.getElementById("pageTitle");
-const sidebar = document.getElementById("sidebar");
-
-function showPage(pageId) {
-
-  const targetPage = document.getElementById(pageId);
-
-  if (!targetPage) {
-    console.error("Page not found:", pageId);
-    return;
-  }
-
-  // Hide all pages
-  pages.forEach(page => {
-    page.classList.remove("active-page");
-  });
-
-  // Show selected page
-  targetPage.classList.add("active-page");
-
-  // Update active navigation buttons
-  navLinks.forEach(link => {
-    link.classList.toggle(
-      "active",
-      link.dataset.page === pageId
-    );
-  });
-
-  // Update page heading
-  if (pageTitle) {
-    const activeLink = document.querySelector(
-      `.nav-link[data-page="${pageId}"]`
-    );
-
-    pageTitle.textContent = activeLink
-      ? activeLink.textContent.trim()
-      : pageId.charAt(0).toUpperCase() + pageId.slice(1);
-  }
-
-  // Close mobile sidebar
-  if (sidebar) {
-    sidebar.classList.remove("open");
-  }
-
-  // Return to top
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  console.log("CredoConnect database client initialized!");
+} else {
+  console.error("Supabase library has not loaded!");
 }
 
-// Handle desktop and mobile navigation
-navLinks.forEach(link => {
 
-  link.addEventListener("click", function(event) {
-
-    event.preventDefault();
-
-    const pageId = this.dataset.page;
-
-    if (pageId) {
-      showPage(pageId);
-    }
-
-  });
-
-});
-// Quick action buttons
-
-document.querySelectorAll("[data-go]").forEach(button => {
-  button.addEventListener("click", () => {
-
-    // Open the requested page
-    showPage(button.dataset.go);
-
-    // Automatically select the network when a network button is clicked
-    if (button.dataset.network) {
-      const airtimeNetwork = document.getElementById("airtimeNetwork");
-
-      if (airtimeNetwork) {
-        airtimeNetwork.value = button.dataset.network;
-      }
-    }
-
-  });
-});
-
-// Mobile sidebar
-document.getElementById("menuToggle").addEventListener("click", () => {
-  sidebar.classList.toggle("open");
-});
 
 // ========================================
 // NOTIFICATIONS
