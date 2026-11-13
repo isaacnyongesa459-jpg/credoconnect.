@@ -329,34 +329,36 @@ function renderTransactions() {
   if (totalSpentElement) totalSpentElement.textContent = "KES " + totalSpent.toLocaleString("en-KE");
 }
 
-async function recordTransactionToServer(type, phone, amount) {
+// ======================================================
+// 11. M-PESA STK PUSH & FORM HANDLERS
+// ======================================================
+
+async function triggerMpesaStkPush(phone, amount, description) {
   try {
-    // Send transaction data to your Node.js backend
-    await apiCall("/items", "POST", {
-      title: type,
-      description: phone,
-      amount: amount,
+    const response = await apiCall("/mpesa/stkpush", "POST", {
+      phone: phone,
+      amount: amount
+    });
+
+    showToast(response.message || "STK Push sent! Check your phone to enter your PIN.");
+    
+    // Add locally as pending
+    transactions.unshift({
+      type: description,
+      phone: maskPhone(phone),
+      amount: Number(amount),
+      date: new Date().toLocaleDateString("en-KE"),
       status: "Pending"
     });
+    renderTransactions();
+
+    return true;
   } catch (error) {
-    console.error("Failed to persist transaction on backend:", error);
+    console.error("M-Pesa payment error:", error);
+    showToast(error.message || "Failed to initiate M-Pesa payment.");
+    return false;
   }
-
-  // Update locally immediately for snappy UI
-  transactions.unshift({
-    type: type,
-    phone: maskPhone(phone),
-    amount: Number(amount),
-    date: new Date().toLocaleDateString("en-KE"),
-    status: "Pending"
-  });
-
-  renderTransactions();
 }
-
-// ======================================================
-// 11. PURCHASE & FORM HANDLERS
-// ======================================================
 
 addSafeListener(getElement("airtimeForm"), "submit", async event => {
   event.preventDefault();
@@ -380,10 +382,23 @@ addSafeListener(getElement("airtimeForm"), "submit", async event => {
     return;
   }
 
-  await recordTransactionToServer(`Airtime - ${network}`, phone, amount);
-  showToast("Airtime request recorded successfully.");
-  event.target.reset();
-  showPage("transactions");
+  const submitButton = event.submitter;
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending STK Push...";
+  }
+
+  const success = await triggerMpesaStkPush(phone, amount, `Airtime - ${network}`);
+  
+  if (submitButton) {
+    submitButton.disabled = false;
+    submitButton.textContent = "Pay with M-Pesa";
+  }
+
+  if (success) {
+    event.target.reset();
+    showPage("transactions");
+  }
 });
 
 addSafeListener(getElement("bundleForm"), "submit", async event => {
@@ -403,10 +418,23 @@ addSafeListener(getElement("bundleForm"), "submit", async event => {
     return;
   }
 
-  await recordTransactionToServer(`Data Bundle - ${network}`, phone, amount);
-  showToast("Data bundle request recorded successfully.");
-  event.target.reset();
-  showPage("transactions");
+  const submitButton = event.submitter;
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending STK Push...";
+  }
+
+  const success = await triggerMpesaStkPush(phone, amount, `Data Bundle - ${network}`);
+
+  if (submitButton) {
+    submitButton.disabled = false;
+    submitButton.textContent = "Pay with M-Pesa";
+  }
+
+  if (success) {
+    event.target.reset();
+    showPage("transactions");
+  }
 });
 
 addSafeListener(getElement("bulkForm"), "submit", async event => {
@@ -435,11 +463,16 @@ addSafeListener(getElement("bulkForm"), "submit", async event => {
     return;
   }
 
+  const submitButton = event.submitter;
+  if (submitButton) submitButton.disabled = true;
+
   for (const number of numbers) {
-    await recordTransactionToServer("Bulk Airtime", number, amount);
+    await triggerMpesaStkPush(number, amount, "Bulk Airtime");
   }
 
-  showToast(`${numbers.length} top-up requests recorded.`);
+  if (submitButton) submitButton.disabled = false;
+
+  showToast(`${numbers.length} STK push requests sent.`);
   event.target.reset();
   showPage("transactions");
 });
