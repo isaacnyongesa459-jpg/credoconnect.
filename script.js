@@ -12,7 +12,7 @@ const SUPABASE_URL = "https://euwsybgjtuwtzgivugan.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3QmVGhPnif-L8DpzWLcb4g_82dCyNj6";
 
 // Change this to your deployed backend URL when pushed to production (e.g., Render)
-const BACKEND_API_URL = "http://localhost:5000/api";
+const BACKEND_API_URL = "https://credoconnect.onrender.com/api";
 
 if (window.supabase && typeof window.supabase.createClient === "function") {
   window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
