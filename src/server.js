@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const db = require('./config/db');
 const itemRoutes = require('./routes/itemRoutes');
+const mpesaRoutes = require('./routes/mpesaRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // API Routes
 app.use('/api/items', itemRoutes);
+app.use('/api/mpesa', mpesaRoutes);
 
 // Health Check Route (Verifies database connectivity)
 app.get('/api/health', async (req, res) => {
