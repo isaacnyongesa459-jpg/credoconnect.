@@ -689,28 +689,56 @@ listen($("authLoginForm"), "submit", async event => {
   }
 });
 
-/* 14. LOGOUT */
 
-listen($("logoutButton"), "click", async event => {
-  event.preventDefault();
+/* 14. CUSTOMER LOGOUT */
 
-  if (!window.db) {
-    showToast("Database connection unavailable.");
-    return;
-  }
+const logoutButton = document.getElementById("logoutButton");
 
-  try {
-    const { error } = await window.db.auth.signOut();
+if (logoutButton) {
+  logoutButton.addEventListener("click", async function (event) {
+    event.preventDefault();
 
-    if (error) throw error;
+    console.log("Logout button clicked.");
 
-    showToast("You have signed out.");
-    showPage("auth");
-  } catch (error) {
-    console.error("Logout error:", error);
-    showToast(error.message || "Unable to sign out.");
-  }
-});
+    if (!window.db) {
+      showToast("Database connection unavailable.");
+      console.error("Supabase client is not initialized.");
+      return;
+    }
+
+    logoutButton.style.pointerEvents = "none";
+
+    try {
+      const { error } = await window.db.auth.signOut({
+        scope: "local"
+      });
+
+      if (error) throw error;
+
+      showToast("You have successfully logged out.");
+
+      // Return the customer to the login page.
+      if (document.getElementById("auth")) {
+        showPage("auth");
+      } else {
+        window.location.reload();
+      }
+
+    } catch (error) {
+      console.error("Logout error:", error);
+      showToast(error.message || "Unable to log out.");
+
+    } finally {
+      logoutButton.style.pointerEvents = "";
+    }
+  });
+
+  console.log("Logout handler attached successfully.");
+
+} else {
+  console.error("Logout button not found.");
+}
+
 
 /* 15. FAVOURITE NUMBERS */
 
