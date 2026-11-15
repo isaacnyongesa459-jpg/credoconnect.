@@ -99,9 +99,11 @@ function showToast(message) {
 // 4. PAGE NAVIGATION
 // ======================================================
 
-const navLinks = document.querySelectorAll(".nav-link, .mobile-nav-link");
+const navLinks = document.querySelectorAll(
+  ".nav-link, .mobile-nav-link"
+);
+
 const pages = document.querySelectorAll(".page");
-const pageTitle = getElement("pageTitle");
 const sidebar = getElement("sidebar");
 
 function showPage(pageId) {
@@ -112,13 +114,18 @@ function showPage(pageId) {
     return;
   }
 
-  // Hide all pages
   pages.forEach(page => {
     page.classList.remove("active-page");
   });
 
-  // Display selected page
   targetPage.classList.add("active-page");
+
+  navLinks.forEach(link => {
+    link.classList.toggle(
+      "active",
+      link.dataset.page === pageId
+    );
+  });
 
   if (pageId === "account") {
     loadCustomerProfile();
@@ -128,20 +135,10 @@ function showPage(pageId) {
     fetchBackendTransactions();
   }
 
-  // Update active navigation links
-  navLinks.forEach(link => {
-    link.classList.toggle("active", link.dataset.page === pageId);
-  });
-
-  // Update page heading
-  if (pageTitle) {
-    const activeLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
-    pageTitle.textContent = activeLink
-      ? activeLink.textContent.trim()
-      : pageId.charAt(0).toUpperCase() + pageId.slice(1);
+  if (pageId === "favourites") {
+    renderFavourites();
   }
 
-  // Close mobile sidebar
   if (sidebar) {
     sidebar.classList.remove("open");
   }
@@ -152,16 +149,15 @@ function showPage(pageId) {
   });
 }
 
-// Desktop and mobile navigation listeners
-navLinks.forEach(link => {
+
+// Handle all navigation buttons and links
+document.querySelectorAll("[data-page]").forEach(link => {
   link.addEventListener("click", event => {
     event.preventDefault();
-    const pageId = link.dataset.page;
-    if (pageId) {
-      showPage(pageId);
-    }
+    showPage(link.dataset.page);
   });
 });
+
 
 // ======================================================
 // 5. QUICK ACTIONS AND NETWORK SELECTION
@@ -266,68 +262,139 @@ function maskPhone(phone) {
 
 async function fetchBackendTransactions() {
   try {
-    const response = await apiCall("/items"); // Fetches from your backend API
-    if (response && response.data) {
-      transactions = response.data.map(item => ({
-        type: item.title || "Transaction",
-        phone: maskPhone(item.description || "0700000000"),
-        amount: item.amount || 100,
-        date: new Date(item.created_at).toLocaleDateString("en-KE"),
-        status: item.status || "Successful"
-      }));
+    const response = await apiCall("/items");
+
+    if (response && Array.isArray(response.data)) {
+      transactions = response.data.map(item => {
+        const title = item.title || "Transaction";
+        const networkMatch = title.match(/Safaricom|Airtel|Telkom|Equitel|Faiba/i);
+
+        const statusText = String(item.status || "Pending");
+        const normalizedStatus =
+          /success|completed/i.test(statusText) ? "Successful" :
+          /fail|cancel/i.test(statusText) ? "Failed" :
+          "Pending";
+
+        return {
+          service: /bundle|data/i.test(title) ? "Data Bundle" : "Airtime",
+          network: item.network || (networkMatch ? networkMatch[0] : "—"),
+          phone: maskPhone(item.description || ""),
+          amount: Number(item.amount || 0),
+          date: item.created_at
+            ? new Date(item.created_at).toLocaleDateString("en-KE")
+            : "—",
+          status: normalizedStatus
+        };
+      });
+
       renderTransactions();
     }
   } catch (error) {
-    console.warn("Could not load remote records, using default view.", error);
-    renderTransactions(); // Fallback render
+    console.warn("Could not load remote transactions:", error);
+    renderTransactions();
   }
 }
 
+
+// Escape dynamic text before inserting it into HTML
+function escapeTransactionText(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[character]);
+}
+
+
+// Create a transaction table row
+function createTransactionRow(transaction) {
+  const status = transaction.status || "Pending";
+
+  const statusClass =
+    status === "Successful" ? "success" :
+    status === "Failed" ? "failed" :
+    "pending";
+
+  return `
+    <tr>
+      <td>${escapeTransactionText(transaction.date)}</td>
+      <td>${escapeTransactionText(transaction.service)}</td>
+      <td>${escapeTransactionText(transaction.network)}</td>
+      <td>KES ${Number(transaction.amount || 0).toLocaleString("en-KE")}</td>
+      <td>
+        <span class="status ${statusClass}">
+          ${escapeTransactionText(status)}
+        </span>
+      </td>
+    </tr>
+  `;
+}
+
+
+// Render recent and complete transaction history
 function renderTransactions() {
   const recentContainer = getElement("recentTransactions");
   const allContainer = getElement("allTransactions");
 
-  const rows = transactions.map(transaction => {
-    const statusClass = transaction.status === "Successful" ? "success" : "pending";
+  const recentTransactions = transactions.slice(0, 5);
 
-    return `
-      <tr>
-        <td>${transaction.type}</td>
-        <td>${transaction.phone}</td>
-        <td>KES ${Number(transaction.amount).toLocaleString("en-KE")}</td>
-        <td>${transaction.date}</td>
-        <td>
-          <span class="status ${statusClass}">
-            ${transaction.status}
-          </span>
-        </td>
-      </tr>
-    `;
-  }).join("");
+  const recentRows = recentTransactions
+    .map(createTransactionRow)
+    .join("");
+
+  const allRows = transactions
+    .map(createTransactionRow)
+    .join("");
 
   if (recentContainer) {
-    recentContainer.innerHTML = rows ? rows : "<tr><td colspan='5'>No transactions yet.</td></tr>";
+    recentContainer.innerHTML = recentRows ||
+      "<tr><td colspan='5'>No transactions yet.</td></tr>";
   }
 
   if (allContainer) {
-    allContainer.innerHTML = rows ? rows : "<tr><td colspan='5'>No transactions yet.</td></tr>";
+    allContainer.innerHTML = allRows ||
+      "<tr><td colspan='5'>No transactions yet.</td></tr>";
   }
 
-  // Calculate statistics
-  const successful = transactions.filter(t => t.status === "Successful");
-  const pending = transactions.filter(t => t.status === "Pending");
-  const totalSpent = successful.reduce((total, t) => total + Number(t.amount), 0);
+  // Calculate dashboard statistics
+  const successful = transactions.filter(
+    transaction => transaction.status === "Successful"
+  );
+
+  const pending = transactions.filter(
+    transaction => transaction.status === "Pending"
+  );
+
+  const totalSpent = successful.reduce(
+    (total, transaction) => total + Number(transaction.amount || 0),
+    0
+  );
 
   const totalTransactions = getElement("totalTransactions");
   const successfulTransactions = getElement("successfulTransactions");
   const pendingTransactions = getElement("pendingTransactions");
   const totalSpentElement = getElement("totalSpent");
 
-  if (totalTransactions) totalTransactions.textContent = transactions.length;
-  if (successfulTransactions) successfulTransactions.textContent = successful.length;
-  if (pendingTransactions) pendingTransactions.textContent = pending.length;
-  if (totalSpentElement) totalSpentElement.textContent = "KES " + totalSpent.toLocaleString("en-KE");
+  if (totalTransactions) {
+    totalTransactions.textContent = transactions.length;
+  }
+
+  if (successfulTransactions) {
+    successfulTransactions.textContent = successful.length;
+  }
+
+  if (pendingTransactions) {
+    pendingTransactions.textContent = pending.length;
+  }
+
+  if (totalSpentElement) {
+    totalSpentElement.textContent =
+      "KES " + totalSpent.toLocaleString("en-KE");
+  }
 }
+
 
 // ======================================================
 // 11. M-PESA STK PUSH & FORM HANDLERS
@@ -719,6 +786,33 @@ addSafeListener(getElement("authLoginForm"), "submit", async event => {
     if (submitButton) submitButton.disabled = false;
   }
 });
+// ======================================================
+// CUSTOMER LOGOUT
+// ======================================================
+
+addSafeListener(getElement("logoutButton"), "click", async event => {
+  event.preventDefault();
+
+  if (!window.db) {
+    showToast("Database connection unavailable.");
+    return;
+  }
+
+  try {
+    const { error } = await window.db.auth.signOut();
+
+    if (error) throw error;
+
+    showToast("You have successfully logged out.");
+
+    showPage("auth");
+
+  } catch (error) {
+    console.error("Logout error:", error);
+    showToast(error.message || "Unable to log out.");
+  }
+});
+
 
 async function checkCustomerSession() {
   if (!window.db) {
