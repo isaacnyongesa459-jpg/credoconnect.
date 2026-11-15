@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#123F32">
 
-  <meta name="description" content="CredoConnect - Buy Kenyan airtime and internet bundles across multiple networks using M-Pesa.">
+  <meta name="description" content="CredoConnect - Buy Safaricom and Airtel airtime, internet bundles, SMS and voice minutes in Kenya.">
 
-  <title>CredoConnect | Airtime & Data Bundles</title>
+  <title>CredoConnect | Kenyan Mobile Marketplace</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,6 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-
   <link rel="icon" href="icon.svg" type="image/svg+xml">
 
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,14 +34,14 @@
       <div class="brand-icon">▥</div>
       <div>
         <h2>Credo<span>Connect</span></h2>
-        <small>One Account. Multiple Networks.</small>
+        <small>One Account. Two Networks.</small>
       </div>
     </div>
 
     <div class="profile-card">
-      <div class="avatar">IN</div>
+      <div class="avatar">CC</div>
       <div>
-        <strong>Isaac Nyongesa</strong>
+        <strong>My Account</strong>
         <span>Customer Account</span>
       </div>
     </div>
@@ -60,7 +59,15 @@
       </a>
 
       <a href="#" class="nav-link" data-page="bundles">
-        <span>▤</span> Buy Data Bundles
+        <span>▤</span> Internet Bundles
+      </a>
+
+      <a href="#" class="nav-link" data-page="sms">
+        <span>✉</span> SMS Packages
+      </a>
+
+      <a href="#" class="nav-link" data-page="minutes">
+        <span>☎</span> Voice Minutes
       </a>
 
       <a href="#" class="nav-link" data-page="transactions">
@@ -71,13 +78,10 @@
         <span>★</span> Favourite Numbers
       </a>
 
-      <a href="#" class="nav-link" data-page="promotions">
-        <span>✦</span> Promotions
-      </a>
+      <p class="nav-label">SUPPORT CREDOCONNECT</p>
 
-      <a href="#" class="nav-link" data-page="notifications">
-        <span>♧</span> Notifications
-        <b class="nav-badge">3</b>
+      <a href="#" class="nav-link" data-page="donate">
+        <span>♥</span> Donate
       </a>
 
       <p class="nav-label">ACCOUNT</p>
@@ -103,7 +107,7 @@
     <div class="sidebar-help">
       <div class="help-icon">🎧</div>
       <h3>Need Help?</h3>
-      <p>Our support team is here for you 24/7.</p>
+      <p>Our support team is here to assist you.</p>
       <button class="primary-button" data-go="support">
         Contact Support
       </button>
@@ -123,24 +127,30 @@
 
         <div class="search-box">
           <span>⌕</span>
-          <input type="search" placeholder="Search for services, networks or bundles...">
+          <input type="search"
+            placeholder="Search services, bundles or transactions...">
         </div>
       </div>
 
       <div class="topbar-actions">
 
-        <button class="icon-button" data-page="notifications" aria-label="Notifications">
+        <button class="icon-button"
+          data-page="notifications"
+          aria-label="Notifications">
           ♧
-          <span class="notification-count">3</span>
+        </button>
+
+        <button class="icon-button" id="themeToggle"
+          aria-label="Toggle light and dark mode">
+          ☾
         </button>
 
         <div class="topbar-user">
-          <div class="avatar small-avatar">IN</div>
+          <div class="avatar small-avatar">CC</div>
           <div>
-            <strong>Isaac Nyongesa</strong>
+            <strong>CredoConnect</strong>
             <span>Customer</span>
           </div>
-          <span>⌄</span>
         </div>
 
       </div>
@@ -150,77 +160,67 @@
     <!-- DASHBOARD -->
     <section class="page active-page" id="dashboard">
 
-      <!-- HERO BANNER -->
       <section class="welcome-banner upgraded-banner">
 
         <div class="welcome-content">
 
           <h2>
             Stay Connected<br>
-            <span>Always!</span>
+            <span>Every Day!</span>
           </h2>
 
           <p>
-            Buy airtime and data bundles across all networks
-            with ease and pay using M-Pesa.
+            Buy airtime, internet bundles, SMS and voice minutes
+            for Safaricom and Airtel using M-Pesa.
           </p>
 
           <div class="welcome-actions">
-            <button class="primary-button" data-go="airtime">
-              Start Now →
+            <button class="primary-button" data-go="bundles">
+              Explore Bundles →
             </button>
           </div>
 
         </div>
 
-        <div class="banner-art">
-          📱
-        </div>
+        <div class="banner-art">📱</div>
 
         <div class="banner-benefits">
-          <p>🟡 Instant Delivery</p>
-          <p>🟡 Secure Payments</p>
-          <p>🟡 Best Prices</p>
+          <p>✓ Secure Payments</p>
+          <p>✓ Two Mobile Networks</p>
+          <p>✓ Convenient Purchases</p>
         </div>
 
       </section>
 
 
-      <!-- NETWORK CARDS -->
+      <!-- NETWORKS -->
       <section class="network-section">
 
         <div class="section-heading">
           <div>
             <h2>Choose Your Network</h2>
-            <p>Purchase airtime and bundles instantly.</p>
+            <p>Select your preferred mobile operator.</p>
           </div>
         </div>
 
         <div class="network-cards">
 
           <article class="network-card">
-            <div class="network-logo safaricom-logo">Safaricom</div>
-            <button data-go="airtime" data-network="Safaricom">Buy Now →</button>
+            <div class="network-logo safaricom-logo">
+              Safaricom
+            </div>
+            <button data-go="airtime" data-network="Safaricom">
+              Buy Now →
+            </button>
           </article>
 
           <article class="network-card">
-            <div class="network-logo airtel-logo">airtel</div>
-            <button data-go="airtime" data-network="Airtel">Buy Now →</button>
-          </article>
-
-          <article class="network-card">
-            <div class="network-logo telkom-logo">Telkom</div>
-            <button data-go="airtime" data-network="Telkom">Buy Now →</button>
-          </article>
-
-          <article class="network-card">
-            <div class="network-logo equitel-logo">Equitel</div>
-            <button data-go="airtime" data-network="Equitel">Buy Now →</button>
-          </article>
-
-          <article class="network-card">
-            <div class="network-logo faiba-logo">Faiba</div>
-            <button data-go="bundles" data-network="Faiba">Buy Now →</button>
+            <div class="network-logo airtel-logo">
+              airtel
+            </div>
+            <button data-go="airtime" data-network="Airtel">
+              Buy Now →
+            </button>
           </article>
 
         </div>
@@ -228,274 +228,54 @@
       </section>
 
 
-      <!-- PROMOTION -->
-      <section class="promo-banner">
-
-        <div class="promo-icon">🎁</div>
-
-        <div>
-          <h3>Special Offer!</h3>
-          <strong>Get 10% Bonus</strong>
-          <p>On selected data bundles.</p>
-        </div>
-
-        <button class="primary-button" data-go="bundles">
-          Buy Now →
-        </button>
-
-      </section>
-
-
-      <!-- DASHBOARD WIDGETS -->
+      <!-- SERVICES -->
       <section class="dashboard-widgets">
 
-        <!-- RECENT TRANSACTIONS -->
-        <div class="content-card recent-card">
-
-          <div class="section-heading">
-            <h2>🟢 Recent Transactions</h2>
-            <button class="text-button" data-go="transactions">
-              View All →
-            </button>
-          </div>
-
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Service</th>
-                  <th>Network</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-
-              <tbody id="recentTransactions">
-                <tr>
-                  <td colspan="5">Loading transactions...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-
-
-        <!-- FAVOURITES -->
-        <div class="content-card favourites-card">
-
-          <div class="section-heading">
-            <h2>⭐ Favourite Numbers</h2>
-            <button class="text-button" data-go="favourites">
-              View All →
-            </button>
-          </div>
-
-          <div id="favouriteNumbersList">
-
-            <div class="favourite-item">
-              <div class="favourite-avatar">DM</div>
-              <div class="favourite-details">
-                <strong>Daniel Mwangi</strong>
-                <span>0712 345 678</span>
-              </div>
-              <button class="favourite-buy" data-go="airtime">Top Up</button>
-            </div>
-
-            <div class="favourite-item">
-              <div class="favourite-avatar">JM</div>
-              <div class="favourite-details">
-                <strong>Jane Muthoni</strong>
-                <span>0723 456 789</span>
-              </div>
-              <button class="favourite-buy" data-go="airtime">Top Up</button>
-            </div>
-
-            <div class="favourite-item">
-              <div class="favourite-avatar">PK</div>
-              <div class="favourite-details">
-                <strong>Peter Kamau</strong>
-                <span>0701 234 567</span>
-              </div>
-              <button class="favourite-buy" data-go="airtime">Top Up</button>
-            </div>
-
-          </div>
-
-          <button class="outline-button" data-go="favourites">
-            + Add Favourite Number
+        <div class="content-card">
+          <h3>📱 Airtime</h3>
+          <p>Top up Safaricom or Airtel numbers.</p>
+          <button class="primary-button" data-go="airtime">
+            Buy Airtime
           </button>
-
         </div>
 
+        <div class="content-card">
+          <h3>🌐 Internet Bundles</h3>
+          <p>Explore available internet packages.</p>
+          <button class="primary-button" data-go="bundles">
+            Buy Bundles
+          </button>
+        </div>
 
-        <!-- NOTIFICATIONS -->
-        <div class="content-card notifications-card">
+        <div class="content-card">
+          <h3>✉ SMS Packages</h3>
+          <p>Find SMS packages for your network.</p>
+          <button class="primary-button" data-go="sms">
+            View SMS
+          </button>
+        </div>
 
-          <div class="section-heading">
-            <h2>🔔 Notifications</h2>
-            <button class="text-button" data-go="notifications">
-              View All →
-            </button>
-          </div>
-
-          <div class="notification-item">
-            <span>📢</span>
-            <div>
-              <strong>10% Bonus on Data Bundles</strong>
-              <p>Get more data for less!</p>
-            </div>
-          </div>
-
-          <div class="notification-item">
-            <span>⭐</span>
-            <div>
-              <strong>Weekend Offer</strong>
-              <p>Enjoy special rates this weekend.</p>
-            </div>
-          </div>
-
-          <div class="notification-item">
-            <span>🟢</span>
-            <div>
-              <strong>Service Update</strong>
-              <p>Improved service for a better experience.</p>
-            </div>
-          </div>
-
+        <div class="content-card">
+          <h3>☎ Voice Minutes</h3>
+          <p>Explore available calling packages.</p>
+          <button class="primary-button" data-go="minutes">
+            View Minutes
+          </button>
         </div>
 
       </section>
 
 
-      <!-- FOOTER BANNER -->
-      <section class="bottom-banner">
-        <div class="bottom-brand">
-          <h2>▥ Credo<span>Connect</span></h2>
-          <p>Smart. Simple. Reliable.</p>
-        </div>
+      <!-- RECENT TRANSACTIONS -->
+      <section class="content-card recent-card">
 
-        <div>🛡 Secure Transactions</div>
-        <div>⚡ Instant Delivery</div>
-        <div>🎧 24/7 Support</div>
-
-        <button class="primary-button" data-go="bundles">
-          Explore Data Bundles →
-        </button>
-      </section>
-
-    </section>
-
-
-    <!-- BUY AIRTIME -->
-    <section class="page" id="airtime">
-      <div class="section-heading">
-        <div>
-          <h2>Buy Airtime</h2>
-          <p>Top up any supported Kenyan mobile network.</p>
-        </div>
-      </div>
-
-      <div class="content-card form-card">
-        <form id="airtimeForm">
-
-          <label for="airtimeNetwork">Select Network</label>
-          <select id="airtimeNetwork" required>
-            <option value="">Choose network</option>
-            <option value="Safaricom">Safaricom</option>
-            <option value="Airtel">Airtel</option>
-            <option value="Telkom">Telkom</option>
-            <option value="Equitel">Equitel</option>
-            <option value="Faiba">Faiba</option>
-          </select>
-
-          <label for="airtimePhone">Phone Number</label>
-          <input id="airtimePhone" type="tel" placeholder="0712345678" required>
-
-          <label for="airtimeAmount">Amount (KES)</label>
-          <input id="airtimeAmount" type="number" min="10" placeholder="100" required>
-
-          <button class="primary-button full-button" type="submit">
-            Pay with M-Pesa
+        <div class="section-heading">
+          <h2>Recent Transactions</h2>
+          <button class="text-button" data-go="transactions">
+            View All →
           </button>
-
-        </form>
-      </div>
-    </section>
-
-
-    <!-- BUY DATA BUNDLES -->
-    <section class="page" id="bundles">
-      <div class="section-heading">
-        <div>
-          <h2>Buy Data Bundles</h2>
-          <p>Choose your network and purchase internet bundles.</p>
         </div>
-      </div>
 
-      <div class="content-card form-card">
-        <form id="bundleForm">
-
-          <label for="bundleNetwork">Select Network</label>
-          <select id="bundleNetwork" required>
-            <option value="">Choose network</option>
-            <option value="Safaricom">Safaricom</option>
-            <option value="Airtel">Airtel</option>
-            <option value="Telkom">Telkom</option>
-            <option value="Equitel">Equitel</option>
-            <option value="Faiba">Faiba</option>
-          </select>
-
-          <label for="bundlePhone">Phone Number</label>
-          <input id="bundlePhone" type="tel" placeholder="0712345678" required>
-
-          <label for="bundleChoice">Select Bundle</label>
-          <select id="bundleChoice" required>
-            <option value="">Choose bundle</option>
-            <option value="100">Daily Bundle - KES 100</option>
-            <option value="250">Weekly Bundle - KES 250</option>
-            <option value="500">Monthly Bundle - KES 500</option>
-          </select>
-
-          <button class="primary-button full-button" type="submit">
-            Pay with M-Pesa
-          </button>
-
-        </form>
-      </div>
-    </section>
-
-
-    <!-- TRANSACTIONS -->
-    <section class="page" id="transactions">
-      <div class="section-heading">
-        <div>
-          <h2>Transactions</h2>
-          <p>View your airtime and data purchase history.</p>
-        </div>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span>Total Transactions</span>
-          <h3 id="totalTransactions">0</h3>
-        </div>
-        <div class="stat-card">
-          <span>Successful</span>
-          <h3 id="successfulTransactions">0</h3>
-        </div>
-        <div class="stat-card">
-          <span>Pending</span>
-          <h3 id="pendingTransactions">0</h3>
-        </div>
-        <div class="stat-card">
-          <span>Total Spent</span>
-          <h3 id="totalSpent">KES 0</h3>
-        </div>
-      </div>
-
-      <div class="content-card">
         <div class="table-wrapper">
           <table>
             <thead>
@@ -507,15 +287,366 @@
                 <th>Status</th>
               </tr>
             </thead>
+
+            <tbody id="recentTransactions">
+              <tr>
+                <td colspan="5">Loading transactions...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- FAVOURITES -->
+      <section class="content-card favourites-card">
+
+        <div class="section-heading">
+          <h2>Favourite Numbers</h2>
+          <button class="text-button" data-go="favourites">
+            View All →
+          </button>
+        </div>
+
+        <div id="favouriteNumbersList">
+          <p>Your favourite numbers will appear here.</p>
+        </div>
+
+        <button class="outline-button" data-go="favourites">
+          + Manage Favourite Numbers
+        </button>
+
+      </section>
+
+    </section>
+
+
+    <!-- AIRTIME -->
+    <section class="page" id="airtime">
+
+      <div class="section-heading">
+        <div>
+          <h2>Buy Airtime</h2>
+          <p>Purchase airtime for Safaricom and Airtel.</p>
+        </div>
+      </div>
+
+      <div class="content-card form-card">
+
+        <form id="airtimeForm">
+
+          <label for="airtimeNetwork">Select Network</label>
+
+          <select id="airtimeNetwork" required>
+            <option value="">Choose network</option>
+            <option value="Safaricom">Safaricom</option>
+            <option value="Airtel">Airtel</option>
+          </select>
+
+          <label for="airtimePhone">Phone Number</label>
+
+          <input id="airtimePhone"
+            type="tel"
+            placeholder="0712345678"
+            required>
+
+          <label for="airtimeAmount">Amount (KES)</label>
+
+          <input id="airtimeAmount"
+            type="number"
+            min="10"
+            placeholder="100"
+            required>
+
+          <button class="primary-button full-button" type="submit">
+            Pay with M-Pesa
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+
+
+    <!-- INTERNET BUNDLES -->
+    <section class="page" id="bundles">
+
+      <div class="section-heading">
+        <div>
+          <h2>Internet Bundles</h2>
+          <p>Browse available packages from your mobile operator.</p>
+        </div>
+      </div>
+
+      <div class="content-card form-card">
+
+        <form id="bundleForm">
+
+          <label for="bundleNetwork">Select Network</label>
+
+          <select id="bundleNetwork" required>
+            <option value="">Choose network</option>
+            <option value="Safaricom">Safaricom</option>
+            <option value="Airtel">Airtel</option>
+          </select>
+
+          <label for="bundlePhone">Phone Number</label>
+
+          <input id="bundlePhone"
+            type="tel"
+            placeholder="0712345678"
+            required>
+
+          <label for="bundleChoice">Available Bundles</label>
+
+          <select id="bundleChoice" required>
+            <option value="">Select a package</option>
+          </select>
+
+          <p class="form-note">
+            Package prices and availability will be loaded
+            from the connected provider API.
+          </p>
+
+          <button class="primary-button full-button" type="submit">
+            Pay with M-Pesa
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+
+
+    <!-- SMS -->
+    <section class="page" id="sms">
+
+      <div class="section-heading">
+        <div>
+          <h2>SMS Packages</h2>
+          <p>Choose an SMS package for your mobile number.</p>
+        </div>
+      </div>
+
+      <div class="content-card form-card">
+
+        <form id="smsForm">
+
+          <label for="smsNetwork">Select Network</label>
+
+          <select id="smsNetwork" required>
+            <option value="">Choose network</option>
+            <option value="Safaricom">Safaricom</option>
+            <option value="Airtel">Airtel</option>
+          </select>
+
+          <label for="smsPhone">Phone Number</label>
+
+          <input id="smsPhone"
+            type="tel"
+            placeholder="0712345678"
+            required>
+
+          <label for="smsChoice">Available SMS Packages</label>
+
+          <select id="smsChoice" required>
+            <option value="">Select an SMS package</option>
+          </select>
+
+          <p class="form-note">
+            Real-time SMS packages will be loaded through
+            the connected provider API.
+          </p>
+
+          <button class="primary-button full-button" type="submit">
+            Continue to Payment
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+
+
+    <!-- VOICE MINUTES -->
+    <section class="page" id="minutes">
+
+      <div class="section-heading">
+        <div>
+          <h2>Voice Minutes</h2>
+          <p>Purchase available calling packages.</p>
+        </div>
+      </div>
+
+      <div class="content-card form-card">
+
+        <form id="minutesForm">
+
+          <label for="minutesNetwork">Select Network</label>
+
+          <select id="minutesNetwork" required>
+            <option value="">Choose network</option>
+            <option value="Safaricom">Safaricom</option>
+            <option value="Airtel">Airtel</option>
+          </select>
+
+          <label for="minutesPhone">Phone Number</label>
+
+          <input id="minutesPhone"
+            type="tel"
+            placeholder="0712345678"
+            required>
+
+          <label for="minutesChoice">Available Minutes Packages</label>
+
+          <select id="minutesChoice" required>
+            <option value="">Select a minutes package</option>
+          </select>
+
+          <p class="form-note">
+            Available voice packages and prices will be
+            retrieved from the provider API.
+          </p>
+
+          <button class="primary-button full-button" type="submit">
+            Continue to Payment
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+
+
+    <!-- DONATIONS -->
+    <section class="page" id="donate">
+
+      <div class="section-heading">
+        <div>
+          <h2>Support CredoConnect</h2>
+          <p>Your contribution helps us improve our services.</p>
+        </div>
+      </div>
+
+      <div class="content-card form-card">
+
+        <div style="text-align:center;padding:20px 10px;">
+
+          <div style="font-size:45px;">💚</div>
+
+          <h2>Make a Donation</h2>
+
+          <p>
+            Thank you for supporting the continued growth
+            and development of CredoConnect.
+          </p>
+
+          <p style="margin-top:25px;">
+            M-Pesa Send Money Number
+          </p>
+
+          <h1 style="color:#159467;font-size:32px;">
+            0798491209
+          </h1>
+
+          <p>
+            Send your contribution directly to this
+            M-Pesa number.
+          </p>
+
+        </div>
+
+        <div class="donation-instructions">
+
+          <h3>How to Donate</h3>
+
+          <ol>
+            <li>Open your M-Pesa menu.</li>
+            <li>Select Send Money.</li>
+            <li>Enter 0798491209.</li>
+            <li>Enter your preferred donation amount.</li>
+            <li>Confirm the recipient and complete payment.</li>
+          </ol>
+
+          <button
+            class="primary-button full-button"
+            id="donateCopyNumber"
+            type="button">
+            Copy M-Pesa Number
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- TRANSACTIONS -->
+    <section class="page" id="transactions">
+
+      <div class="section-heading">
+        <div>
+          <h2>Transactions</h2>
+          <p>View your purchase history.</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <span>Total Transactions</span>
+          <h3 id="totalTransactions">0</h3>
+        </div>
+
+        <div class="stat-card">
+          <span>Successful</span>
+          <h3 id="successfulTransactions">0</h3>
+        </div>
+
+        <div class="stat-card">
+          <span>Pending</span>
+          <h3 id="pendingTransactions">0</h3>
+        </div>
+
+        <div class="stat-card">
+          <span>Total Spent</span>
+          <h3 id="totalSpent">KES 0</h3>
+        </div>
+
+      </div>
+
+      <div class="content-card">
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Service</th>
+                <th>Network</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
             <tbody id="allTransactions"></tbody>
           </table>
         </div>
+
       </div>
+
     </section>
 
 
     <!-- FAVOURITES -->
     <section class="page" id="favourites">
+
       <div class="section-heading">
         <div>
           <h2>Favourite Numbers</h2>
@@ -528,43 +659,30 @@
           <p>Your favourite numbers will appear here.</p>
         </div>
       </div>
-    </section>
 
-
-    <!-- PROMOTIONS -->
-    <section class="page" id="promotions">
-      <div class="section-heading">
-        <div>
-          <h2>Promotions</h2>
-          <p>Discover special offers and available deals.</p>
-        </div>
-      </div>
-
-      <div class="content-card">
-        <h2>🎁 Special Data Bundle Offer</h2>
-        <p>Enjoy promotional offers on selected bundles.</p>
-        <button class="primary-button" data-go="bundles">Explore Bundles</button>
-      </div>
     </section>
 
 
     <!-- NOTIFICATIONS -->
     <section class="page" id="notifications">
+
       <div class="section-heading">
         <div>
           <h2>Notifications</h2>
-          <p>Your latest updates and announcements.</p>
+          <p>Your account and transaction updates.</p>
         </div>
       </div>
 
       <div class="content-card">
-        <p>You currently have no additional notifications.</p>
+        <p>You currently have no new notifications.</p>
       </div>
+
     </section>
 
 
     <!-- ACCOUNT -->
     <section class="page" id="account">
+
       <div class="section-heading">
         <div>
           <h2>My Account</h2>
@@ -573,6 +691,7 @@
       </div>
 
       <div class="content-card form-card">
+
         <label for="profileFullName">Full Name</label>
         <input id="profileFullName" type="text">
 
@@ -585,12 +704,15 @@
         <button class="primary-button full-button" id="saveAccount">
           Save Changes
         </button>
+
       </div>
+
     </section>
 
 
     <!-- SUPPORT -->
     <section class="page" id="support">
+
       <div class="section-heading">
         <div>
           <h2>Customer Support</h2>
@@ -599,14 +721,22 @@
       </div>
 
       <div class="content-card">
-        <h2>Need assistance?</h2>
-        <p>Contact the CredoConnect support team for help with purchases and payments.</p>
+
+        <h2>Need Assistance?</h2>
+
+        <p>
+          Contact the CredoConnect support team for help
+          with purchases, payments and your account.
+        </p>
+
       </div>
+
     </section>
 
 
     <!-- SETTINGS -->
     <section class="page" id="settings">
+
       <div class="section-heading">
         <div>
           <h2>Settings</h2>
@@ -615,11 +745,17 @@
       </div>
 
       <div class="content-card">
+
         <h3>Appearance</h3>
+
+        <p>Choose your preferred display mode.</p>
+
         <button class="outline-button" id="themeToggle">
-          Toggle Theme
+          Toggle Light / Dark Mode
         </button>
+
       </div>
+
     </section>
 
 
@@ -629,10 +765,13 @@
       <div class="content-card form-card">
 
         <div id="loginPanel">
+
           <h2>Welcome Back</h2>
+
           <p>Sign in to your CredoConnect account.</p>
 
           <form id="authLoginForm">
+
             <label for="loginEmail">Email Address</label>
             <input id="loginEmail" type="email" required>
 
@@ -642,16 +781,23 @@
             <button class="primary-button full-button" type="submit">
               Sign In
             </button>
+
           </form>
 
-          <p>Don't have an account?
-            <button class="text-button" id="showSignup">Create Account</button>
+          <p>
+            Don't have an account?
+            <button class="text-button" id="showSignup">
+              Create Account
+            </button>
           </p>
+
         </div>
 
 
         <div id="signupPanel" hidden>
+
           <h2>Create Account</h2>
+
           <p>Join CredoConnect today.</p>
 
           <form id="authSignupForm">
@@ -666,7 +812,10 @@
             <input id="signupEmail" type="email" required>
 
             <label for="signupPassword">Password</label>
-            <input id="signupPassword" type="password" minlength="8" required>
+            <input id="signupPassword"
+              type="password"
+              minlength="8"
+              required>
 
             <button class="primary-button full-button" type="submit">
               Create Account
@@ -674,37 +823,63 @@
 
           </form>
 
-          <p>Already registered?
-            <button class="text-button" id="showLogin">Sign In</button>
+          <p>
+            Already registered?
+            <button class="text-button" id="showLogin">
+              Sign In
+            </button>
           </p>
+
         </div>
 
       </div>
+
     </section>
 
 
     <!-- BULK AIRTIME -->
     <section class="page" id="bulk">
+
       <div class="content-card form-card">
+
         <h2>Bulk Airtime</h2>
+
         <form id="bulkForm">
+
           <label for="bulkNumbers">Phone Numbers</label>
-          <textarea id="bulkNumbers" rows="5" placeholder="0712345678&#10;0723456789" required></textarea>
+
+          <textarea id="bulkNumbers"
+            rows="5"
+            placeholder="0712345678&#10;0723456789"
+            required></textarea>
 
           <label for="bulkAmount">Amount per Number (KES)</label>
-          <input id="bulkAmount" type="number" min="10" required>
 
-          <button class="primary-button full-button" type="submit">Send Airtime</button>
+          <input id="bulkAmount"
+            type="number"
+            min="10"
+            required>
+
+          <button class="primary-button full-button" type="submit">
+            Send Airtime
+          </button>
+
         </form>
+
       </div>
+
     </section>
 
 
     <!-- SCHEDULED TOP UPS -->
     <section class="page" id="schedule">
+
       <div class="content-card form-card">
+
         <h2>Schedule Top-Up</h2>
+
         <form id="scheduleForm">
+
           <label for="schedulePhone">Phone Number</label>
           <input id="schedulePhone" type="tel" required>
 
@@ -714,10 +889,16 @@
           <label for="scheduleDate">Date</label>
           <input id="scheduleDate" type="date" required>
 
-          <button class="primary-button full-button" type="submit">Schedule Top-Up</button>
+          <button class="primary-button full-button" type="submit">
+            Schedule Top-Up
+          </button>
+
         </form>
+
       </div>
+
     </section>
+
 
     <div class="toast" id="toast"></div>
 
@@ -749,9 +930,9 @@
     <small>Bundles</small>
   </a>
 
-  <a href="#" class="mobile-nav-link" data-page="transactions">
-    <span>◈</span>
-    <small>History</small>
+  <a href="#" class="mobile-nav-link" data-page="donate">
+    <span>♥</span>
+    <small>Donate</small>
   </a>
 
   <a href="#" class="mobile-nav-link" data-page="account">
