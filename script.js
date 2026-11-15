@@ -786,56 +786,52 @@ addSafeListener(getElement("authLoginForm"), "submit", async event => {
     if (submitButton) submitButton.disabled = false;
   }
 });
+
 // ======================================================
 // CUSTOMER LOGOUT
 // ======================================================
 
-addSafeListener(getElement("logoutButton"), "click", async event => {
-  event.preventDefault();
+const logoutButton = getElement("logoutButton");
 
-  if (!window.db) {
-    showToast("Database connection unavailable.");
-    return;
-  }
+if (logoutButton) {
+  logoutButton.addEventListener("click", async function(event) {
+    event.preventDefault();
 
-  try {
-    const { error } = await window.db.auth.signOut();
+    console.log("CredoConnect logout button clicked.");
 
-    if (error) throw error;
-
-    showToast("You have successfully logged out.");
-
-    showPage("auth");
-
-  } catch (error) {
-    console.error("Logout error:", error);
-    showToast(error.message || "Unable to log out.");
-  }
-});
-
-
-async function checkCustomerSession() {
-  if (!window.db) {
-    showPage("auth");
-    return;
-  }
-
-  try {
-    const { data, error } = await window.db.auth.getSession();
-    if (error) throw error;
-
-    if (data.session) {
-      showPage("dashboard");
-    } else {
-      showPage("auth");
+    if (!window.db) {
+      showToast("Database connection unavailable.");
+      return;
     }
-  } catch (error) {
-    console.error("Session check failed:", error);
-    showPage("auth");
-  }
-}
 
-checkCustomerSession();
+    logoutButton.style.pointerEvents = "none";
+
+    try {
+      const { error } = await window.db.auth.signOut({
+        scope: "local"
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      showToast("You have successfully logged out.");
+
+      showPage("auth");
+
+    } catch (error) {
+      console.error("Logout error:", error);
+      showToast(error.message || "Unable to log out.");
+
+    } finally {
+      logoutButton.style.pointerEvents = "";
+    }
+  });
+
+  console.log("CredoConnect logout handler attached.");
+} else {
+  console.error("Logout button not found in index.html.");
+}
 
 // ======================================================
 // 15. SERVICE WORKER REGISTRATION & STARTUP
