@@ -1,84 +1,38 @@
-// ======================================================
-// CREDOCONNECT - MAIN APPLICATION JAVASCRIPT
-// ======================================================
 
 "use strict";
 
-// ======================================================
-// 1. SUPABASE DATABASE & BACKEND CONFIGURATION
-// ======================================================
+/* =========================================================
+   CREDOCONNECT — MAIN APPLICATION SCRIPT
+   Networks: Safaricom and Airtel
+   ========================================================= */
+
+/* 1. CONFIGURATION */
 
 const SUPABASE_URL = "https://euwsybgjtuwtzgivugan.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3QmVGhPnif-L8DpzWLcb4g_82dCyNj6";
 
-// Change this to your deployed backend URL when pushed to production (e.g., Render)
 const BACKEND_API_URL = "https://credoconnect.onrender.com/api";
+const DONATION_NUMBER = "0798491209";
 
-if (window.supabase && typeof window.supabase.createClient === "function") {
-  window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  console.log("CredoConnect database client initialized!");
+if (window.supabase?.createClient) {
+  window.db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
 } else {
-  console.error("Supabase library not found. Check the Supabase script in index.html.");
+  console.error("Supabase library is missing.");
 }
 
-// ======================================================
-// 2. COMMON ELEMENT HELPERS & API UTILS
-// ======================================================
+/* 2. HELPERS */
 
-function getElement(id) {
-  return document.getElementById(id);
+const $ = id => document.getElementById(id);
+
+function listen(element, event, callback) {
+  if (element) element.addEventListener(event, callback);
 }
-
-function addSafeListener(element, eventName, callback) {
-  if (element) {
-    element.addEventListener(eventName, callback);
-  }
-}
-
-// Centralized Backend Fetch Helper
-async function apiCall(endpoint, method = "GET", bodyData = null) {
-  try {
-    const headers = {
-      "Content-Type": "application/json"
-    };
-
-    // Include Supabase auth token if available
-    if (window.db) {
-      const { data } = await window.db.auth.getSession();
-      if (data?.session?.access_token) {
-        headers["Authorization"] = `Bearer ${data.session.access_token}`;
-      }
-    }
-
-    const options = {
-      method,
-      headers
-    };
-
-    if (bodyData) {
-      options.body = JSON.stringify(bodyData);
-    }
-
-    const response = await fetch(`${BACKEND_API_URL}${endpoint}`, options);
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || "Something went wrong with the server request.");
-    }
-
-    return result;
-  } catch (error) {
-    console.error(`API Error [${method} ${endpoint}]:`, error);
-    throw error;
-  }
-}
-
-// ======================================================
-// 3. NOTIFICATIONS
-// ======================================================
 
 function showToast(message) {
-  const toast = getElement("toast");
+  const toast = $("toast");
 
   if (!toast) {
     console.log(message);
@@ -88,151 +42,65 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
 
-  clearTimeout(window.toastTimer);
+  clearTimeout(window.credoToastTimer);
 
-  window.toastTimer = setTimeout(() => {
+  window.credoToastTimer = setTimeout(() => {
     toast.classList.remove("show");
-  }, 3000);
+  }, 3500);
 }
 
-// ======================================================
-// 4. PAGE NAVIGATION
-// ======================================================
-
-const navLinks = document.querySelectorAll(
-  ".nav-link, .mobile-nav-link"
-);
-
-const pages = document.querySelectorAll(".page");
-const sidebar = getElement("sidebar");
-
-function showPage(pageId) {
-  const targetPage = getElement(pageId);
-
-  if (!targetPage) {
-    console.error("Page not found:", pageId);
-    return;
-  }
-
-  pages.forEach(page => {
-    page.classList.remove("active-page");
-  });
-
-  targetPage.classList.add("active-page");
-
-  navLinks.forEach(link => {
-    link.classList.toggle(
-      "active",
-      link.dataset.page === pageId
-    );
-  });
-
-  if (pageId === "account") {
-    loadCustomerProfile();
-  }
-
-  if (pageId === "transactions") {
-    fetchBackendTransactions();
-  }
-
-  if (pageId === "favourites") {
-    renderFavourites();
-  }
-
-  if (sidebar) {
-    sidebar.classList.remove("open");
-  }
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[character]);
 }
 
+async function apiCall(endpoint, method = "GET", body = null) {
+  const headers = {
+    "Content-Type": "application/json"
+  };
 
-// Handle all navigation buttons and links
-document.querySelectorAll("[data-page]").forEach(link => {
-  link.addEventListener("click", event => {
-    event.preventDefault();
-    showPage(link.dataset.page);
-  });
-});
+  if (window.db) {
+    const { data } = await window.db.auth.getSession();
 
-
-// ======================================================
-// 5. QUICK ACTIONS AND NETWORK SELECTION
-// ======================================================
-
-document.querySelectorAll("[data-go]").forEach(button => {
-  button.addEventListener("click", () => {
-    showPage(button.dataset.go);
-
-    if (button.dataset.network) {
-      const airtimeNetwork = getElement("airtimeNetwork");
-      if (airtimeNetwork) {
-        airtimeNetwork.value = button.dataset.network;
-      }
-
-      const bundleNetwork = getElement("bundleNetwork");
-      if (bundleNetwork) {
-        bundleNetwork.value = button.dataset.network;
-      }
+    if (data?.session?.access_token) {
+      headers.Authorization = `Bearer ${data.session.access_token}`;
     }
-  });
-});
-
-// ======================================================
-// 6. MOBILE SIDEBAR & UI CONTROLS
-// ======================================================
-
-addSafeListener(getElement("menuToggle"), "click", () => {
-  if (sidebar) {
-    sidebar.classList.toggle("open");
   }
-});
 
-addSafeListener(document.querySelector(".notification-button"), "click", () => {
-  showToast("You have no new notifications.");
-});
+  const options = { method, headers };
 
-// ======================================================
-// 7. LIGHT AND DARK THEME
-// ======================================================
-
-const themeToggle = getElement("themeToggle");
-
-function applyTheme(theme) {
-  const isLight = theme === "light";
-  document.body.classList.toggle("light-theme", isLight);
-  if (themeToggle) {
-    themeToggle.textContent = isLight ? "☀" : "☾";
+  if (body !== null) {
+    options.body = JSON.stringify(body);
   }
+
+  const response = await fetch(`${BACKEND_API_URL}${endpoint}`, options);
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("The server returned an invalid response.");
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "The server could not complete your request."
+    );
+  }
+
+  return result;
 }
 
-addSafeListener(themeToggle, "click", () => {
-  const isCurrentlyLight = document.body.classList.contains("light-theme");
-  const newTheme = isCurrentlyLight ? "dark" : "light";
-  applyTheme(newTheme);
-  localStorage.setItem("credoTheme", newTheme);
-});
-
-const savedTheme = localStorage.getItem("credoTheme");
-if (savedTheme === "light") {
-  applyTheme("light");
-}
-
-// ======================================================
-// 8. TRANSACTION DATA & STATE
-// ======================================================
-
-let transactions = [];
-
-// ======================================================
-// 9. PHONE NUMBER HELPERS
-// ======================================================
+/* 3. KENYAN PHONE NUMBER VALIDATION */
 
 function normalizePhone(phone) {
-  let number = String(phone || "").replace(/\s+/g, "").replace(/-/g, "");
+  let number = String(phone || "").replace(/[\s-]/g, "");
 
   if (number.startsWith("+254")) {
     number = "0" + number.slice(4);
@@ -244,332 +112,751 @@ function normalizePhone(phone) {
 }
 
 function validKenyanPhone(phone) {
-  const number = normalizePhone(phone);
-  return /^0[17]\d{8}$/.test(number);
+  return /^0[17]\d{8}$/.test(normalizePhone(phone));
 }
+
+function formatPhoneForMpesa(phone) {
+  return "254" + normalizePhone(phone).slice(1);
+}
+
+/* 4. PAGE NAVIGATION */
+
+const pages = document.querySelectorAll(".page");
+const navigationLinks = document.querySelectorAll(
+  ".nav-link[data-page], .mobile-nav-link[data-page]"
+);
+
+function showPage(pageId) {
+  const target = $(pageId);
+
+  if (!target) {
+    console.warn("Page not found:", pageId);
+    return;
+  }
+
+  pages.forEach(page => page.classList.remove("active-page"));
+  target.classList.add("active-page");
+
+  navigationLinks.forEach(link => {
+    link.classList.toggle("active", link.dataset.page === pageId);
+  });
+
+  $("sidebar")?.classList.remove("open");
+
+  if (pageId === "transactions") {
+    loadTransactions();
+  }
+
+  if (pageId === "account") {
+    loadCustomerProfile();
+  }
+
+  if (pageId === "favourites") {
+    renderFavourites();
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll("[data-page]").forEach(link => {
+  link.addEventListener("click", event => {
+    event.preventDefault();
+    showPage(link.dataset.page);
+  });
+});
+
+document.querySelectorAll("[data-go]").forEach(button => {
+  button.addEventListener("click", () => {
+    const destination = button.dataset.go;
+    showPage(destination);
+
+    const network = button.dataset.network;
+
+    if (network) {
+      if ($("airtimeNetwork")) $("airtimeNetwork").value = network;
+      if ($("bundleNetwork")) $("bundleNetwork").value = network;
+    }
+  });
+});
+
+/* 5. MOBILE MENU */
+
+listen($("menuToggle"), "click", () => {
+  $("sidebar")?.classList.toggle("open");
+});
+
+/* 6. LIGHT AND DARK THEME */
+
+function applyTheme(theme) {
+  document.body.dataset.theme = theme;
+
+  document.querySelectorAll("#themeToggle").forEach(button => {
+    button.textContent = theme === "dark" ? "☀" : "☾";
+    button.setAttribute(
+      "aria-label",
+      theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+    );
+  });
+
+  localStorage.setItem("credoTheme", theme);
+}
+
+applyTheme(localStorage.getItem("credoTheme") || "light");
+
+document.querySelectorAll("#themeToggle").forEach(button => {
+  button.addEventListener("click", () => {
+    const current = document.body.dataset.theme || "light";
+    applyTheme(current === "dark" ? "light" : "dark");
+  });
+});
+
+/* 7. TRANSACTIONS */
+
+let transactions = [];
 
 function maskPhone(phone) {
   const number = normalizePhone(phone);
-  if (number.length !== 10) {
-    return number;
+
+  if (number.length !== 10) return number;
+
+  return `${number.slice(0, 4)} *** ${number.slice(-3)}`;
+}
+
+function transactionStatus(status) {
+  const value = String(status || "Pending").toLowerCase();
+
+  if (value.includes("success") || value.includes("complete")) {
+    return "Successful";
   }
-  return number.slice(0, 4) + " *** " + number.slice(-3);
-}
 
-// ======================================================
-// 10. TRANSACTION RENDERING & FETCHING
-// ======================================================
-
-async function fetchBackendTransactions() {
-  try {
-    const response = await apiCall("/items");
-
-    if (response && Array.isArray(response.data)) {
-      transactions = response.data.map(item => {
-        const title = item.title || "Transaction";
-        const networkMatch = title.match(/Safaricom|Airtel|Telkom|Equitel|Faiba/i);
-
-        const statusText = String(item.status || "Pending");
-        const normalizedStatus =
-          /success|completed/i.test(statusText) ? "Successful" :
-          /fail|cancel/i.test(statusText) ? "Failed" :
-          "Pending";
-
-        return {
-          service: /bundle|data/i.test(title) ? "Data Bundle" : "Airtime",
-          network: item.network || (networkMatch ? networkMatch[0] : "—"),
-          phone: maskPhone(item.description || ""),
-          amount: Number(item.amount || 0),
-          date: item.created_at
-            ? new Date(item.created_at).toLocaleDateString("en-KE")
-            : "—",
-          status: normalizedStatus
-        };
-      });
-
-      renderTransactions();
-    }
-  } catch (error) {
-    console.warn("Could not load remote transactions:", error);
-    renderTransactions();
+  if (value.includes("fail") || value.includes("cancel")) {
+    return "Failed";
   }
+
+  return "Pending";
 }
 
+function createTransactionRow(item) {
+  const status = transactionStatus(item.status);
+  const statusClass = status.toLowerCase();
 
-// Escape dynamic text before inserting it into HTML
-function escapeTransactionText(value) {
-  return String(value ?? "").replace(/[&<>"']/g, character => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  })[character]);
-}
+  const title = item.title || "Transaction";
+  const network = item.network ||
+    (title.match(/Safaricom|Airtel/i)?.[0] || "—");
 
-
-// Create a transaction table row
-function createTransactionRow(transaction) {
-  const status = transaction.status || "Pending";
-
-  const statusClass =
-    status === "Successful" ? "success" :
-    status === "Failed" ? "failed" :
-    "pending";
+  const date = item.created_at
+    ? new Date(item.created_at).toLocaleString("en-KE")
+    : "—";
 
   return `
     <tr>
-      <td>${escapeTransactionText(transaction.date)}</td>
-      <td>${escapeTransactionText(transaction.service)}</td>
-      <td>${escapeTransactionText(transaction.network)}</td>
-      <td>KES ${Number(transaction.amount || 0).toLocaleString("en-KE")}</td>
-      <td>
-        <span class="status ${statusClass}">
-          ${escapeTransactionText(status)}
-        </span>
-      </td>
+      <td>${escapeHTML(date)}</td>
+      <td>${escapeHTML(title)}</td>
+      <td>${escapeHTML(network)}</td>
+      <td>KES ${Number(item.amount || 0).toLocaleString("en-KE")}</td>
+      <td><span class="status ${statusClass}">${status}</span></td>
     </tr>
   `;
 }
 
-
-// Render recent and complete transaction history
 function renderTransactions() {
-  const recentContainer = getElement("recentTransactions");
-  const allContainer = getElement("allTransactions");
+  const rows = transactions.map(createTransactionRow).join("");
 
-  const recentTransactions = transactions.slice(0, 5);
+  const emptyRow = `
+    <tr>
+      <td colspan="5">No transactions found.</td>
+    </tr>
+  `;
 
-  const recentRows = recentTransactions
-    .map(createTransactionRow)
-    .join("");
-
-  const allRows = transactions
-    .map(createTransactionRow)
-    .join("");
-
-  if (recentContainer) {
-    recentContainer.innerHTML = recentRows ||
-      "<tr><td colspan='5'>No transactions yet.</td></tr>";
+  if ($("recentTransactions")) {
+    $("recentTransactions").innerHTML =
+      transactions.slice(0, 5).map(createTransactionRow).join("") || emptyRow;
   }
 
-  if (allContainer) {
-    allContainer.innerHTML = allRows ||
-      "<tr><td colspan='5'>No transactions yet.</td></tr>";
+  if ($("allTransactions")) {
+    $("allTransactions").innerHTML = rows || emptyRow;
   }
 
-  // Calculate dashboard statistics
   const successful = transactions.filter(
-    transaction => transaction.status === "Successful"
+    item => transactionStatus(item.status) === "Successful"
   );
 
   const pending = transactions.filter(
-    transaction => transaction.status === "Pending"
+    item => transactionStatus(item.status) === "Pending"
   );
 
   const totalSpent = successful.reduce(
-    (total, transaction) => total + Number(transaction.amount || 0),
+    (sum, item) => sum + Number(item.amount || 0),
     0
   );
 
-  const totalTransactions = getElement("totalTransactions");
-  const successfulTransactions = getElement("successfulTransactions");
-  const pendingTransactions = getElement("pendingTransactions");
-  const totalSpentElement = getElement("totalSpent");
-
-  if (totalTransactions) {
-    totalTransactions.textContent = transactions.length;
+  if ($("totalTransactions")) {
+    $("totalTransactions").textContent = transactions.length;
   }
 
-  if (successfulTransactions) {
-    successfulTransactions.textContent = successful.length;
+  if ($("successfulTransactions")) {
+    $("successfulTransactions").textContent = successful.length;
   }
 
-  if (pendingTransactions) {
-    pendingTransactions.textContent = pending.length;
+  if ($("pendingTransactions")) {
+    $("pendingTransactions").textContent = pending.length;
   }
 
-  if (totalSpentElement) {
-    totalSpentElement.textContent =
-      "KES " + totalSpent.toLocaleString("en-KE");
+  if ($("totalSpent")) {
+    $("totalSpent").textContent =
+      `KES ${totalSpent.toLocaleString("en-KE")}`;
   }
 }
 
+async function loadTransactions() {
+  try {
+    const response = await apiCall("/items");
 
-// ======================================================
-// 11. M-PESA STK PUSH & FORM HANDLERS
-// ======================================================
+    if (Array.isArray(response.data)) {
+      transactions = response.data;
+      renderTransactions();
+    }
+  } catch (error) {
+    console.error("Transaction loading error:", error);
+    showToast("Could not load transaction history.");
+  }
+}
+
+/* 8. M-PESA STK PUSH */
 
 async function triggerMpesaStkPush(phone, amount, description) {
   try {
     const response = await apiCall("/mpesa/stkpush", "POST", {
-      phone: phone,
-      amount: amount
+      phone: formatPhoneForMpesa(phone),
+      amount: Number(amount)
     });
 
-    showToast(response.message || "STK Push sent! Check your phone to enter your PIN.");
-    
-    // Add locally as pending
-    transactions.unshift({
-      type: description,
-      phone: maskPhone(phone),
-      amount: Number(amount),
-      date: new Date().toLocaleDateString("en-KE"),
-      status: "Pending"
-    });
-    renderTransactions();
+    if (!response.success) {
+      throw new Error(response.message || "M-Pesa request failed.");
+    }
+
+    showToast(
+      "M-Pesa prompt requested. Check your phone and enter your M-Pesa PIN."
+    );
+
+    console.log("M-Pesa STK response:", response.data);
 
     return true;
   } catch (error) {
-    console.error("M-Pesa payment error:", error);
-    showToast(error.message || "Failed to initiate M-Pesa payment.");
+    console.error("M-Pesa error:", error);
+    showToast(error.message || "Unable to send M-Pesa prompt.");
     return false;
   }
 }
 
-addSafeListener(getElement("airtimeForm"), "submit", async event => {
+/* 9. AIRTIME PURCHASE FORM */
+
+listen($("airtimeForm"), "submit", async event => {
   event.preventDefault();
 
-  const phone = normalizePhone(getElement("airtimePhone").value);
-  const network = getElement("airtimeNetwork").value;
-  const amount = Number(getElement("airtimeAmount").value);
+  const phone = normalizePhone($("airtimePhone")?.value);
+  const network = $("airtimeNetwork")?.value;
+  const amount = Number($("airtimeAmount")?.value);
 
   if (!validKenyanPhone(phone)) {
-    showToast("Please enter a valid Kenyan phone number.");
+    showToast("Enter a valid Kenyan phone number.");
     return;
   }
 
-  if (!network) {
-    showToast("Please select a network.");
+  if (!["Safaricom", "Airtel"].includes(network)) {
+    showToast("Choose Safaricom or Airtel.");
     return;
   }
 
-  if (!Number.isFinite(amount) || amount < 10 || amount > 10000) {
-    showToast("Enter an airtime amount between KES 10 and KES 10,000.");
+  if (!Number.isInteger(amount) || amount < 10 || amount > 10000) {
+    showToast("Enter an amount between KES 10 and KES 10,000.");
     return;
   }
 
-  const submitButton = event.submitter;
-  if (submitButton) {
-    submitButton.disabled = true;
-    submitButton.textContent = "Sending STK Push...";
+  const button = event.submitter;
+  const originalText = button?.textContent;
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Requesting payment...";
   }
 
-  const success = await triggerMpesaStkPush(phone, amount, `Airtime - ${network}`);
-  
-  if (submitButton) {
-    submitButton.disabled = false;
-    submitButton.textContent = "Pay with M-Pesa";
+  const success = await triggerMpesaStkPush(
+    phone,
+    amount,
+    `Airtime - ${network}`
+  );
+
+  if (button) {
+    button.disabled = false;
+    button.textContent = originalText || "Pay with M-Pesa";
   }
 
   if (success) {
     event.target.reset();
-    showPage("transactions");
   }
 });
 
-addSafeListener(getElement("bundleForm"), "submit", async event => {
+/* 10. INTERNET BUNDLE FORM */
+
+listen($("bundleForm"), "submit", async event => {
   event.preventDefault();
 
-  const phone = normalizePhone(getElement("bundlePhone").value);
-  const network = getElement("bundleNetwork").value;
-  const amount = Number(getElement("bundleChoice").value);
+  const phone = normalizePhone($("bundlePhone")?.value);
+  const network = $("bundleNetwork")?.value;
+  const amount = Number($("bundleChoice")?.value);
 
   if (!validKenyanPhone(phone)) {
-    showToast("Please enter a valid Kenyan phone number.");
+    showToast("Enter a valid Kenyan phone number.");
     return;
   }
 
-  if (!network || !Number.isFinite(amount) || amount <= 0) {
-    showToast("Please select a network and bundle.");
+  if (!["Safaricom", "Airtel"].includes(network)) {
+    showToast("Choose Safaricom or Airtel.");
     return;
   }
 
-  const submitButton = event.submitter;
-  if (submitButton) {
-    submitButton.disabled = true;
-    submitButton.textContent = "Sending STK Push...";
+  if (!Number.isFinite(amount) || amount <= 0) {
+    showToast("Choose an available bundle first.");
+    return;
   }
 
-  const success = await triggerMpesaStkPush(phone, amount, `Data Bundle - ${network}`);
+  const button = event.submitter;
+  const originalText = button?.textContent;
 
-  if (submitButton) {
-    submitButton.disabled = false;
-    submitButton.textContent = "Pay with M-Pesa";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Requesting payment...";
+  }
+
+  const success = await triggerMpesaStkPush(
+    phone,
+    amount,
+    `Internet Bundle - ${network}`
+  );
+
+  if (button) {
+    button.disabled = false;
+    button.textContent = originalText || "Pay with M-Pesa";
   }
 
   if (success) {
     event.target.reset();
-    showPage("transactions");
   }
 });
 
-addSafeListener(getElement("bulkForm"), "submit", async event => {
+/* 11. SMS AND MINUTES FORMS
+   These handlers only request payment.
+   Actual SMS/minutes fulfilment needs a provider API. */
+
+async function handleSimplePurchaseForm(event, productName) {
   event.preventDefault();
 
-  const numbers = getElement("bulkNumbers").value
-    .split("\n")
-    .map(num => normalizePhone(num.trim()))
-    .filter(Boolean);
+  const form = event.currentTarget;
+  const formData = new FormData(form);
 
-  const amount = Number(getElement("bulkAmount").value);
+  const phone =
+    normalizePhone(formData.get("phone") ||
+      form.querySelector('input[type="tel"]')?.value);
 
-  if (!numbers.length) {
-    showToast("Enter at least one phone number.");
-    return;
-  }
-
-  if (!Number.isFinite(amount) || amount < 10 || amount > 10000) {
-    showToast("Enter a valid amount between KES 10 and KES 10,000.");
-    return;
-  }
-
-  const invalidNumbers = numbers.filter(num => !validKenyanPhone(num));
-  if (invalidNumbers.length > 0) {
-    showToast("Some phone numbers are invalid. Please check your list.");
-    return;
-  }
-
-  const submitButton = event.submitter;
-  if (submitButton) submitButton.disabled = true;
-
-  for (const number of numbers) {
-    await triggerMpesaStkPush(number, amount, "Bulk Airtime");
-  }
-
-  if (submitButton) submitButton.disabled = false;
-
-  showToast(`${numbers.length} STK push requests sent.`);
-  event.target.reset();
-  showPage("transactions");
-});
-
-// ======================================================
-// 12. SCHEDULED TOP-UPS
-// ======================================================
-
-const scheduleDate = getElement("scheduleDate");
-
-function getLocalDateString() {
-  const today = new Date();
-  const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
-  return localDate.toISOString().split("T")[0];
-}
-
-const localToday = getLocalDateString();
-if (scheduleDate) {
-  scheduleDate.min = localToday;
-}
-
-addSafeListener(getElement("scheduleForm"), "submit", event => {
-  event.preventDefault();
-
-  const phone = normalizePhone(getElement("schedulePhone").value);
-  const amount = Number(getElement("scheduleAmount").value);
-  const date = scheduleDate ? scheduleDate.value : "";
+  const amount = Number(
+    formData.get("amount") ||
+    form.querySelector('[name="amount"]')?.value ||
+    form.querySelector('input[type="number"]')?.value
+  );
 
   if (!validKenyanPhone(phone)) {
-    showToast("Please enter a valid Kenyan phone number.");
+    showToast("Enter a valid Kenyan phone number.");
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    showToast(`Select a valid ${productName} package.`);
+    return;
+  }
+
+  const button = event.submitter;
+  if (button) button.disabled = true;
+
+  const success = await triggerMpesaStkPush(phone, amount, productName);
+
+  if (button) button.disabled = false;
+
+  if (success) form.reset();
+}
+
+listen($("smsForm"), "submit", event => {
+  handleSimplePurchaseForm(event, "SMS Package");
+});
+
+listen($("minutesForm"), "submit", event => {
+  handleSimplePurchaseForm(event, "Minutes Package");
+});
+
+/* 12. CUSTOMER PROFILE */
+
+async function loadCustomerProfile() {
+  if (!window.db) return;
+
+  try {
+    const { data, error } = await window.db.auth.getUser();
+
+    if (error) throw error;
+
+    const user = data.user;
+
+    if (!user) {
+      showPage("auth");
+      return;
+    }
+
+    const { data: profile, error: profileError } = await window.db
+      .from("profiles")
+      .select("full_name, phone")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    if ($("profileFullName")) {
+      $("profileFullName").value =
+        profile?.full_name || user.user_metadata?.full_name || "";
+    }
+
+    if ($("profilePhone")) {
+      $("profilePhone").value =
+        profile?.phone || user.user_metadata?.phone || "";
+    }
+
+    if ($("profileEmail")) {
+      $("profileEmail").value = user.email || "";
+    }
+  } catch (error) {
+    console.error("Profile loading error:", error);
+    showToast("Unable to load your account details.");
+  }
+}
+
+listen($("saveAccount"), "click", async () => {
+  if (!window.db) {
+    showToast("Database connection unavailable.");
+    return;
+  }
+
+  const fullName = $("profileFullName")?.value.trim();
+  const phone = normalizePhone($("profilePhone")?.value);
+
+  if (!fullName) {
+    showToast("Enter your full name.");
+    return;
+  }
+
+  if (!validKenyanPhone(phone)) {
+    showToast("Enter a valid Kenyan phone number.");
+    return;
+  }
+
+  const button = $("saveAccount");
+  button.disabled = true;
+
+  try {
+    const { data, error: userError } = await window.db.auth.getUser();
+
+    if (userError) throw userError;
+    if (!data.user) throw new Error("Please sign in first.");
+
+    const { error } = await window.db.from("profiles").upsert({
+      id: data.user.id,
+      full_name: fullName,
+      phone,
+      updated_at: new Date().toISOString()
+    });
+
+    if (error) throw error;
+
+    showToast("Account details saved successfully.");
+  } catch (error) {
+    console.error(error);
+    showToast(error.message || "Could not save your profile.");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+/* 13. LOGIN AND REGISTRATION */
+
+listen($("showSignup"), "click", () => {
+  if ($("loginPanel")) $("loginPanel").hidden = true;
+  if ($("signupPanel")) $("signupPanel").hidden = false;
+});
+
+listen($("showLogin"), "click", () => {
+  if ($("signupPanel")) $("signupPanel").hidden = true;
+  if ($("loginPanel")) $("loginPanel").hidden = false;
+});
+
+listen($("authSignupForm"), "submit", async event => {
+  event.preventDefault();
+
+  if (!window.db) {
+    showToast("Database connection unavailable.");
+    return;
+  }
+
+  const fullName = $("signupName")?.value.trim();
+  const phone = normalizePhone($("signupPhone")?.value);
+  const email = $("signupEmail")?.value.trim();
+  const password = $("signupPassword")?.value;
+
+  if (!fullName) {
+    showToast("Enter your full name.");
+    return;
+  }
+
+  if (!validKenyanPhone(phone)) {
+    showToast("Enter a valid Kenyan phone number.");
+    return;
+  }
+
+  if (!email || !password || password.length < 8) {
+    showToast("Enter an email and a password of at least 8 characters.");
+    return;
+  }
+
+  const button = event.submitter;
+  if (button) button.disabled = true;
+
+  try {
+    const { data, error } = await window.db.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          phone
+        }
+      }
+    });
+
+    if (error) throw error;
+
+    event.target.reset();
+
+    if (data.session) {
+      showToast("Your account has been created.");
+      showPage("dashboard");
+    } else {
+      showToast("Account created. Check your email to verify your address.");
+    }
+  } catch (error) {
+    console.error("Signup error:", error);
+    showToast(error.message || "Registration failed.");
+  } finally {
+    if (button) button.disabled = false;
+  }
+});
+
+listen($("authLoginForm"), "submit", async event => {
+  event.preventDefault();
+
+  if (!window.db) {
+    showToast("Database connection unavailable.");
+    return;
+  }
+
+  const email = $("loginEmail")?.value.trim();
+  const password = $("loginPassword")?.value;
+
+  const button = event.submitter;
+  if (button) button.disabled = true;
+
+  try {
+    const { error } = await window.db.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    event.target.reset();
+    showToast("Welcome back to CredoConnect.");
+    showPage("dashboard");
+  } catch (error) {
+    console.error("Login error:", error);
+    showToast(error.message || "Login failed.");
+  } finally {
+    if (button) button.disabled = false;
+  }
+});
+
+/* 14. LOGOUT */
+
+listen($("logoutButton"), "click", async event => {
+  event.preventDefault();
+
+  if (!window.db) {
+    showToast("Database connection unavailable.");
+    return;
+  }
+
+  try {
+    const { error } = await window.db.auth.signOut();
+
+    if (error) throw error;
+
+    showToast("You have signed out.");
+    showPage("auth");
+  } catch (error) {
+    console.error("Logout error:", error);
+    showToast(error.message || "Unable to sign out.");
+  }
+});
+
+/* 15. FAVOURITE NUMBERS */
+
+function getFavourites() {
+  try {
+    return JSON.parse(localStorage.getItem("credoFavourites") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveFavourites(items) {
+  localStorage.setItem("credoFavourites", JSON.stringify(items));
+}
+
+function renderFavourites() {
+  const container =
+    $("favouriteNumbersList") || $("allFavouriteNumbers");
+
+  if (!container) return;
+
+  const favourites = getFavourites();
+
+  if (!favourites.length) {
+    container.innerHTML = "<p>No saved numbers yet.</p>";
+    return;
+  }
+
+  container.innerHTML = favourites.map((item, index) => `
+    <div class="favourite-item">
+      <div class="favourite-details">
+        <strong>${escapeHTML(item.name || "Saved number")}</strong>
+        <p>${escapeHTML(item.phone)}</p>
+        <small>${escapeHTML(item.network || "")}</small>
+      </div>
+      <button type="button" class="favourite-buy"
+        data-favourite-buy="${index}">Top Up</button>
+      <button type="button" data-favourite-delete="${index}"
+        aria-label="Remove favourite">Remove</button>
+    </div>
+  `).join("");
+
+  container.querySelectorAll("[data-favourite-buy]").forEach(button => {
+    button.addEventListener("click", () => {
+      const item = favourites[Number(button.dataset.favouriteBuy)];
+
+      showPage("airtime");
+
+      if ($("airtimePhone")) $("airtimePhone").value = item.phone;
+      if ($("airtimeNetwork") && item.network) {
+        $("airtimeNetwork").value = item.network;
+      }
+    });
+  });
+
+  container.querySelectorAll("[data-favourite-delete]").forEach(button => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.favouriteDelete);
+      favourites.splice(index, 1);
+      saveFavourites(favourites);
+      renderFavourites();
+      showToast("Favourite removed.");
+    });
+  });
+}
+
+/* Optional favourite-save form or button.
+   Add data-save-favourite to a button to enable this action. */
+
+document.querySelectorAll("[data-save-favourite]").forEach(button => {
+  button.addEventListener("click", () => {
+    const phone = normalizePhone(
+      button.dataset.phone || $("airtimePhone")?.value
+    );
+
+    const network =
+      button.dataset.network || $("airtimeNetwork")?.value || "";
+
+    if (!validKenyanPhone(phone)) {
+      showToast("Enter a valid phone number first.");
+      return;
+    }
+
+    const favourites = getFavourites();
+
+    if (favourites.some(item => item.phone === phone)) {
+      showToast("That number is already saved.");
+      return;
+    }
+
+    favourites.push({
+      name: button.dataset.name || "Saved number",
+      phone,
+      network
+    });
+
+    saveFavourites(favourites);
+    showToast("Number added to favourites.");
+  });
+});
+
+/* 16. DONATION NUMBER COPY */
+
+listen($("donateCopyNumber"), "click", async () => {
+  try {
+    await navigator.clipboard.writeText(DONATION_NUMBER);
+    showToast("M-Pesa number copied.");
+  } catch {
+    showToast(`Send your donation to ${DONATION_NUMBER}.`);
+  }
+});
+
+/* 17. NOTIFICATIONS */
+
+document.querySelectorAll(
+  ".notification-button, [data-notifications]"
+).forEach(button => {
+  button.addEventListener("click", () => {
+    showToast("You have no new notifications.");
+  });
+});
+
+/* 18. SCHEDULE DATE VALIDATION */
+
+function localDateString() {
+  const now = new Date();
+  const local = new Date(
+    now.getTime() - now.getTimezoneOffset() * 60000
+  );
+
+  return local.toISOString().slice(0, 10);
+}
+
+if ($("scheduleDate")) {
+  $("scheduleDate").min = localDateString();
+}
+
+listen($("scheduleForm"), "submit", event => {
+  event.preventDefault();
+
+  const phone = normalizePhone($("schedulePhone")?.value);
+  const amount = Number($("scheduleAmount")?.value);
+  const date = $("scheduleDate")?.value;
+
+  if (!validKenyanPhone(phone)) {
+    showToast("Enter a valid Kenyan phone number.");
     return;
   }
 
@@ -578,271 +865,53 @@ addSafeListener(getElement("scheduleForm"), "submit", event => {
     return;
   }
 
-  if (!date || date < localToday) {
-    showToast("Choose a valid future date.");
+  if (!date || date < localDateString()) {
+    showToast("Choose a valid date.");
     return;
   }
 
-  showToast(`Schedule successfully saved for ${date}.`);
-  event.target.reset();
-  if (scheduleDate) {
-    scheduleDate.min = getLocalDateString();
-  }
+  showToast("Schedule details checked. Automatic scheduled payments are not enabled yet.");
 });
 
-// ======================================================
-// 13. CUSTOMER ACCOUNT PROFILE
-// ======================================================
+/* 19. AUTHENTICATION SESSION CHECK */
 
-async function loadCustomerProfile() {
-  if (!window.db) {
-    showToast("Database connection unavailable.");
-    return;
-  }
+async function checkSession() {
+  if (!window.db) return;
 
   try {
-    const { data: userData, error: userError } = await window.db.auth.getUser();
-    if (userError) throw userError;
-
-    const user = userData.user;
-    if (!user) {
-      showPage("auth");
-      return;
-    }
-
-    const { data: profile, error } = await window.db
-      .from("profiles")
-      .select("full_name, phone")
-      .eq("id", user.id)
-      .single();
-
-    if (error && error.code !== "PGRST116") throw error;
-
-    if (profile) {
-      getElement("profileFullName").value = profile.full_name || user.user_metadata?.full_name || "";
-      getElement("profilePhone").value = profile.phone || user.user_metadata?.phone || "";
-    }
-    getElement("profileEmail").value = user.email || "";
-
-    console.log("Customer profile loaded successfully.");
-  } catch (error) {
-    console.error("Profile loading error:", error);
-    showToast("Unable to load your profile.");
-  }
-}
-
-addSafeListener(getElement("saveAccount"), "click", async () => {
-  if (!window.db) {
-    showToast("Database connection unavailable.");
-    return;
-  }
-
-  const fullName = getElement("profileFullName").value.trim();
-  const phone = normalizePhone(getElement("profilePhone").value);
-
-  if (!fullName) {
-    showToast("Please enter your full name.");
-    return;
-  }
-
-  if (!validKenyanPhone(phone)) {
-    showToast("Please enter a valid Kenyan phone number.");
-    return;
-  }
-
-  const button = getElement("saveAccount");
-  button.disabled = true;
-  button.textContent = "Saving...";
-
-  try {
-    const { data: userData, error: userError } = await window.db.auth.getUser();
-    if (userError) throw userError;
-
-    const user = userData.user;
-    if (!user) {
-      showPage("auth");
-      return;
-    }
-
-    const { error } = await window.db
-      .from("profiles")
-      .upsert({
-        id: user.id,
-        full_name: fullName,
-        phone: phone,
-        updated_at: new Date()
-      });
-
-    if (error) throw error;
-
-    showToast("Your profile has been updated!");
-  } catch (error) {
-    console.error("Profile saving error:", error);
-    showToast(error.message || "Unable to save profile.");
-  } finally {
-    button.disabled = false;
-    button.textContent = "Save Changes";
-  }
-});
-
-// ======================================================
-// 14. AUTHENTICATION (LOGIN & REGISTRATION)
-// ======================================================
-
-const loginPanel = getElement("loginPanel");
-const signupPanel = getElement("signupPanel");
-
-addSafeListener(getElement("showSignup"), "click", () => {
-  if (loginPanel) loginPanel.hidden = true;
-  if (signupPanel) signupPanel.hidden = false;
-});
-
-addSafeListener(getElement("showLogin"), "click", () => {
-  if (signupPanel) signupPanel.hidden = true;
-  if (loginPanel) loginPanel.hidden = false;
-});
-
-addSafeListener(getElement("authSignupForm"), "submit", async event => {
-  event.preventDefault();
-
-  if (!window.db) {
-    showToast("Database connection is unavailable.");
-    return;
-  }
-
-  const fullName = getElement("signupName").value.trim();
-  const phone = normalizePhone(getElement("signupPhone").value);
-  const email = getElement("signupEmail").value.trim();
-  const password = getElement("signupPassword").value;
-
-  if (!validKenyanPhone(phone)) {
-    showToast("Please enter a valid Kenyan phone number.");
-    return;
-  }
-
-  if (password.length < 8) {
-    showToast("Password must contain at least 8 characters.");
-    return;
-  }
-
-  const submitButton = event.submitter;
-  if (submitButton) submitButton.disabled = true;
-
-  try {
-    const { data, error } = await window.db.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: { full_name: fullName, phone: phone }
-      }
-    });
+    const { data, error } = await window.db.auth.getSession();
 
     if (error) throw error;
 
     if (data.session) {
-      showToast("Account created successfully!");
-      event.target.reset();
-      showPage("dashboard");
+      console.log("Customer is signed in.");
     } else {
-      showToast("Account created! Check your email to verify.");
+      console.log("No active customer session.");
     }
   } catch (error) {
-    console.error("Registration error:", error);
-    showToast(error.message || "Registration failed.");
-  } finally {
-    if (submitButton) submitButton.disabled = false;
+    console.error("Session check failed:", error);
   }
-});
+}
 
-addSafeListener(getElement("authLoginForm"), "submit", async event => {
-  event.preventDefault();
+if (window.db) {
+  window.db.auth.onAuthStateChange((event, session) => {
+    console.log("Authentication event:", event);
 
-  if (!window.db) {
-    showToast("Database connection is unavailable.");
-    return;
-  }
-
-  const email = getElement("loginEmail").value.trim();
-  const password = getElement("loginPassword").value;
-
-  const submitButton = event.submitter;
-  if (submitButton) submitButton.disabled = true;
-
-  try {
-    const { error } = await window.db.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-
-    if (error) throw error;
-
-    showToast("Welcome back!");
-    event.target.reset();
-    showPage("dashboard");
-  } catch (error) {
-    console.error("Login error:", error);
-    showToast(error.message || "Login failed.");
-  } finally {
-    if (submitButton) submitButton.disabled = false;
-  }
-});
-
-// ======================================================
-// CUSTOMER LOGOUT
-// ======================================================
-
-const logoutButton = getElement("logoutButton");
-
-if (logoutButton) {
-  logoutButton.addEventListener("click", async function(event) {
-    event.preventDefault();
-
-    console.log("CredoConnect logout button clicked.");
-
-    if (!window.db) {
-      showToast("Database connection unavailable.");
-      return;
-    }
-
-    logoutButton.style.pointerEvents = "none";
-
-    try {
-      const { error } = await window.db.auth.signOut({
-        scope: "local"
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      showToast("You have successfully logged out.");
-
+    if (event === "SIGNED_OUT") {
       showPage("auth");
-
-    } catch (error) {
-      console.error("Logout error:", error);
-      showToast(error.message || "Unable to log out.");
-
-    } finally {
-      logoutButton.style.pointerEvents = "";
     }
   });
 
-  console.log("CredoConnect logout handler attached.");
-} else {
-  console.error("Logout button not found in index.html.");
+  checkSession();
 }
 
-// ======================================================
-// 15. SERVICE WORKER REGISTRATION & STARTUP
-// ======================================================
+/* 20. SERVICE WORKER */
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("./service-worker.js")
+    navigator.serviceWorker.register("./service-worker.js")
       .then(registration => {
-        console.log("CredoConnect service worker activated:", registration.scope);
+        console.log("CredoConnect service worker registered.");
       })
       .catch(error => {
         console.error("Service worker registration failed:", error);
@@ -850,5 +919,9 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+/* 21. APPLICATION STARTUP */
+
 renderTransactions();
-console.log("CredoConnect updated script loaded successfully.");
+renderFavourites();
+
+console.log("CredoConnect application initialized.");
