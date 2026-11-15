@@ -36,12 +36,17 @@ const triggerStkPush = async (req, res) => {
     }
 
     // Format phone number to 254XXXXXXXXX
-    let formattedPhone = phone.toString().replace(/\s+/g, '').replace(/-/g, '');
-    if (formattedPhone.startsWith('0')) {
-      formattedPhone = '254' + formattedPhone.slice(1);
-    } else if (formattedPhone.startsWith('+')) {
-      formattedPhone = formattedPhone.slice(1);
-    }
+   let phoneNumber = req.body.phone; // e.g., 0712345678 or +254712345678
+
+// Clean and format phone number to 254XXXXXXXXX
+let formattedPhone = phoneNumber.toString().trim();
+if (formattedPhone.startsWith("+")) {
+  formattedPhone = formattedPhone.substring(1);
+}
+if (formattedPhone.startsWith("0")) {
+  formattedPhone = "254" + formattedPhone.substring(1);
+}
+    
 
     const accessToken = req.token;
     const url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
