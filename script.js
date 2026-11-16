@@ -49,13 +49,7 @@ async function apiCall(endpoint, method = "GET", body = null) {
     "Content-Type": "application/json"
   };
 
-  if (window.db) {
-    const { data } = await window.db.auth.getSession();
 
-    if (data?.session?.access_token) {
-      headers.Authorization = `Bearer ${data.session.access_token}`;
-    }
-  }
 
   const options = { method, headers };
 
