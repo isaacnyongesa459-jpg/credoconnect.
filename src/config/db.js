@@ -1,41 +1,29 @@
 
-
 "use strict";
 
 const { Pool } = require("pg");
-
-// ======================================================
-// CREDOCONNECT - NEON POSTGRESQL DATABASE CONNECTION
-// ======================================================
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
 const pool = DATABASE_URL
   ? new Pool({
       connectionString: DATABASE_URL,
-      max: 10,
+      ssl: {
+        rejectUnauthorized: true
+      },
+      max: 5,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000
     })
   : null;
 
-// ======================================================
-// DATABASE QUERY FUNCTION
-// ======================================================
-
 async function query(text, params = []) {
   if (!pool) {
-    throw new Error(
-      "DATABASE_URL is missing. Configure it in your backend environment."
-    );
+    throw new Error("DATABASE_URL is missing.");
   }
 
   return pool.query(text, params);
 }
-
-// ======================================================
-// TEST DATABASE CONNECTION
-// ======================================================
 
 async function testDatabaseConnection() {
   if (!pool) {
@@ -51,22 +39,11 @@ async function testDatabaseConnection() {
   return result.rows[0];
 }
 
-// ======================================================
-// DATABASE ERROR HANDLING
-// ======================================================
-
 if (pool) {
   pool.on("error", (error) => {
-    console.error(
-      "Unexpected PostgreSQL connection error:",
-      error.message
-    );
+    console.error("PostgreSQL connection error:", error.message);
   });
 }
-
-// ======================================================
-// EXPORT DATABASE FUNCTIONS
-// ======================================================
 
 module.exports = {
   query,
