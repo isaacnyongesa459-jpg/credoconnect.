@@ -286,19 +286,9 @@ function renderTransactions() {
       `KES ${totalSpent.toLocaleString("en-KE")}`;
   }
 }
-
-async function loadTransactions() {
-  try {
-    const response = await apiCall("/items");
-
-    if (Array.isArray(response.data)) {
-      transactions = response.data;
-      renderTransactions();
-    }
-  } catch (error) {
-    console.error("Transaction loading error:", error);
-    showToast("Could not load transaction history.");
-  }
+function loadTransactions() {
+  transactions = [];
+  renderTransactions();
 }
 
 /* 8. M-PESA STK PUSH */
@@ -472,94 +462,17 @@ listen($("minutesForm"), "submit", event => {
   handleSimplePurchaseForm(event, "Minutes Package");
 });
 
-/* 12. CUSTOMER PROFILE */
 
-async function loadCustomerProfile() {
-  if (!window.db) return;
+/* 12. CUSTOMER PROFILE & AUTHENTICATION
+   Temporarily disabled until a new database is connected.
+*/
 
-  try {
-    const { data, error } = await window.db.auth.getUser();
-
-    if (error) throw error;
-
-    const user = data.user;
-
-    if (!user) {
-      showPage("auth");
-      return;
-    }
-
-    const { data: profile, error: profileError } = await window.db
-      .from("profiles")
-      .select("full_name, phone")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (profileError) throw profileError;
-
-    if ($("profileFullName")) {
-      $("profileFullName").value =
-        profile?.full_name || user.user_metadata?.full_name || "";
-    }
-
-    if ($("profilePhone")) {
-      $("profilePhone").value =
-        profile?.phone || user.user_metadata?.phone || "";
-    }
-
-    if ($("profileEmail")) {
-      $("profileEmail").value = user.email || "";
-    }
-  } catch (error) {
-    console.error("Profile loading error:", error);
-    showToast("Unable to load your account details.");
-  }
+function loadCustomerProfile() {
+  showToast("Customer profiles will be available soon.");
 }
 
-listen($("saveAccount"), "click", async () => {
-  if (!window.db) {
-    showToast("Database connection unavailable.");
-    return;
-  }
-
-  const fullName = $("profileFullName")?.value.trim();
-  const phone = normalizePhone($("profilePhone")?.value);
-
-  if (!fullName) {
-    showToast("Enter your full name.");
-    return;
-  }
-
-  if (!validKenyanPhone(phone)) {
-    showToast("Enter a valid Kenyan phone number.");
-    return;
-  }
-
-  const button = $("saveAccount");
-  button.disabled = true;
-
-  try {
-    const { data, error: userError } = await window.db.auth.getUser();
-
-    if (userError) throw userError;
-    if (!data.user) throw new Error("Please sign in first.");
-
-    const { error } = await window.db.from("profiles").upsert({
-      id: data.user.id,
-      full_name: fullName,
-      phone,
-      updated_at: new Date().toISOString()
-    });
-
-    if (error) throw error;
-
-    showToast("Account details saved successfully.");
-  } catch (error) {
-    console.error(error);
-    showToast(error.message || "Could not save your profile.");
-  } finally {
-    button.disabled = false;
-  }
+listen($("saveAccount"), "click", () => {
+  showToast("Profile saving will be available when the new database is connected.");
 });
 
 /* 13. LOGIN AND REGISTRATION */
@@ -574,149 +487,22 @@ listen($("showLogin"), "click", () => {
   if ($("loginPanel")) $("loginPanel").hidden = false;
 });
 
-listen($("authSignupForm"), "submit", async event => {
+listen($("authSignupForm"), "submit", event => {
   event.preventDefault();
-
-  if (!window.db) {
-    showToast("Database connection unavailable.");
-    return;
-  }
-
-  const fullName = $("signupName")?.value.trim();
-  const phone = normalizePhone($("signupPhone")?.value);
-  const email = $("signupEmail")?.value.trim();
-  const password = $("signupPassword")?.value;
-
-  if (!fullName) {
-    showToast("Enter your full name.");
-    return;
-  }
-
-  if (!validKenyanPhone(phone)) {
-    showToast("Enter a valid Kenyan phone number.");
-    return;
-  }
-
-  if (!email || !password || password.length < 8) {
-    showToast("Enter an email and a password of at least 8 characters.");
-    return;
-  }
-
-  const button = event.submitter;
-  if (button) button.disabled = true;
-
-  try {
-    const { data, error } = await window.db.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-          phone
-        }
-      }
-    });
-
-    if (error) throw error;
-
-    event.target.reset();
-
-    if (data.session) {
-      showToast("Your account has been created.");
-      showPage("dashboard");
-    } else {
-      showToast("Account created. Check your email to verify your address.");
-    }
-  } catch (error) {
-    console.error("Signup error:", error);
-    showToast(error.message || "Registration failed.");
-  } finally {
-    if (button) button.disabled = false;
-  }
+  showToast("Registration is temporarily unavailable.");
 });
 
-listen($("authLoginForm"), "submit", async event => {
+listen($("authLoginForm"), "submit", event => {
   event.preventDefault();
-
-  if (!window.db) {
-    showToast("Database connection unavailable.");
-    return;
-  }
-
-  const email = $("loginEmail")?.value.trim();
-  const password = $("loginPassword")?.value;
-
-  const button = event.submitter;
-  if (button) button.disabled = true;
-
-  try {
-    const { error } = await window.db.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) throw error;
-
-    event.target.reset();
-    showToast("Welcome back to CredoConnect.");
-    showPage("dashboard");
-  } catch (error) {
-    console.error("Login error:", error);
-    showToast(error.message || "Login failed.");
-  } finally {
-    if (button) button.disabled = false;
-  }
+  showToast("Login is temporarily unavailable.");
 });
-
 
 /* 14. CUSTOMER LOGOUT */
 
-const logoutButton = document.getElementById("logoutButton");
-
-if (logoutButton) {
-  logoutButton.addEventListener("click", async function (event) {
-    event.preventDefault();
-
-    console.log("Logout button clicked.");
-
-    if (!window.db) {
-      showToast("Database connection unavailable.");
-      console.error("Supabase client is not initialized.");
-      return;
-    }
-
-    logoutButton.style.pointerEvents = "none";
-
-    try {
-      const { error } = await window.db.auth.signOut({
-        scope: "local"
-      });
-
-      if (error) throw error;
-
-      showToast("You have successfully logged out.");
-
-      // Return the customer to the login page.
-      if (document.getElementById("auth")) {
-        showPage("auth");
-      } else {
-        window.location.reload();
-      }
-
-    } catch (error) {
-      console.error("Logout error:", error);
-      showToast(error.message || "Unable to log out.");
-
-    } finally {
-      logoutButton.style.pointerEvents = "";
-    }
-  });
-
-  console.log("Logout handler attached successfully.");
-
-} else {
-  console.error("Logout button not found.");
-}
+listen($("logoutButton"), "click", event => {
+  event.preventDefault();
+  showToast("Authentication will be restored with the new database.");
+});
 
 
 /* 15. FAVOURITE NUMBERS */
