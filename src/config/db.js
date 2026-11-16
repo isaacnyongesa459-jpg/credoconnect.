@@ -1,23 +1,11 @@
-const { Pool } = require('pg');
-require('dotenv').config();
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false // Required for cloud databases like Supabase or Neon
-  }
-});
-
-pool.on('connect', () => {
-  console.log('Database connected successfully!');
-});
-
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
+// ======================================================
+// CREDOCONNECT - DATABASE DISCONNECTED
+// Temporary compatibility layer.
+// ======================================================
 
 module.exports = {
-  query: (text, params) => pool.query(text, params),
-  pool
+  query: async () => ({
+    rows: []
+  }),
+  pool: null
 };
