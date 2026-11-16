@@ -1,6 +1,6 @@
 const axios = require('axios');
 require('dotenv').config();
-const db = require('../config/db');
+
 
 // Helper to get Safaricom OAuth Token
 async function getAccessToken(req, res, next) {
@@ -76,26 +76,7 @@ if (formattedPhone.startsWith("0")) {
       }
     });
 
-    // Optionally save initial pending transaction in database
-    await db.query(
-      'INSERT INTO items (title, description, amount, status) VALUES ($1, $2, $3, $4)',
-      ['M-Pesa Topup', formattedPhone, amount, 'Pending']
-    );
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'STK push sent successfully. Check your phone.',
-      data: response.data
-    });
-  } catch (error) {
-    console.error('STK Push error:', error.response?.data || error.message);
-    return res.status(500).json({
-      status: 'error',
-      message: 'Failed to initiate M-Pesa STK push',
-      details: error.response?.data || error.message
-    });
-  }
-};
+    
 
 // Handle Safaricom Callback
 const mpesaCallback = async (req, res) => {
