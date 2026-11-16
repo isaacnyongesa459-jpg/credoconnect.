@@ -8,6 +8,7 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 require("dotenv").config();
+const { testDatabaseConnection } = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,13 +28,33 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "healthy",
-    database: "not connected",
-    message: "CredoConnect backend is running without Supabase."
-  });
+app.get("/api/health", async (req, res) => {
+  try {
+    const database = await testDatabaseConnection();
+
+    return res.status(200).json({
+      status: "healthy",
+      database: {
+        status: "connected",
+        name: database.database_name,
+        serverTime: database.server_time
+      },
+      message: "CredoConnect backend and Neon database are connected."
+    });
+
+  } catch (error) {
+    console.error("Database health check failed:", error.message);
+
+    return res.status(503).json({
+      status: "degraded",
+      database: {
+        status: "disconnected"
+      },
+      message: "Backend is running, but database connection failed."
+    });
+  }
 });
+
 
 
 
