@@ -35,35 +35,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// ======================================================
-// 3. ITEMS & TRANSACTIONS API ROUTES
-// ======================================================
-app.get("/api/items", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM items ORDER BY created_at DESC LIMIT 50");
-    res.json({ success: true, data: result.rows });
-  } catch (error) {
-    console.error("Fetch items error:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
 
-app.post("/api/items", async (req, res) => {
-  const { title, description, amount, status } = req.body;
-  try {
-    const query = `
-      INSERT INTO items (title, description, amount, status, created_at)
-      VALUES ($1, $2, $3, $4, NOW())
-      RETURNING *;
-    `;
-    const values = [title || "Transaction", description || "", amount || 0, status || "Pending"];
-    const result = await pool.query(query, values);
-    res.status(201).json({ success: true, data: result.rows[0] });
-  } catch (error) {
-    console.error("Insert item error:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
 
 // ======================================================
 // 4. SAFARICOM DARAJA M-PESA STK PUSH INTEGRATION
