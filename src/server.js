@@ -7,7 +7,6 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
-const { Pool } = require("pg");
 require("dotenv").config();
 
 const app = express();
@@ -18,33 +17,22 @@ app.use(cors());
 app.use(express.json());
 
 // ======================================================
-// 1. SUPABASE POSTGRESQL DATABASE CONNECTION (POOL)
-// ======================================================
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
-
-pool.connect()
-  .then(() => console.log("Connected to Supabase PostgreSQL database successfully!"))
-  .catch(err => console.error("Database connection error:", err));
-
-// ======================================================
 // 2. HEALTH CHECK & ROOT ROUTE
 // ======================================================
+
 app.get("/", (req, res) => {
-  res.json({ status: "online", message: "CredoConnect Backend Server is running." });
+  res.json({
+    status: "online",
+    message: "CredoConnect Backend Server is running."
+  });
 });
 
-app.get("/api/health", async (req, res) => {
-  try {
-    const dbCheck = await pool.query("SELECT NOW()");
-    res.json({ status: "healthy", databaseTime: dbCheck.rows[0].now });
-  } catch (error) {
-    res.status(500).json({ status: "unhealthy", error: error.message });
-  }
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "healthy",
+    database: "not connected",
+    message: "CredoConnect backend is running without Supabase."
+  });
 });
 
 // ======================================================
@@ -237,7 +225,7 @@ app.post("/api/mpesa/callback", async (req, res) => {
     const callbackData = req.body;
     console.log("M-Pesa Callback received:", JSON.stringify(callbackData, null, 2));
 
-    // You can parse callbackData here to update transaction status in Supabase if needed
+  
 
     res.json({ ResultCode: 0, ResultDesc: "Success" });
   } catch (error) {
