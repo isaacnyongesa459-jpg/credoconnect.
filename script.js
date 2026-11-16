@@ -5,23 +5,8 @@
    CREDOCONNECT — MAIN APPLICATION SCRIPT
    Networks: Safaricom and Airtel
    ========================================================= */
-
-/* 1. CONFIGURATION */
-
-const SUPABASE_URL = "https://euwsybgjtuwtzgivugan.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_3QmVGhPnif-L8DpzWLcb4g_82dCyNj6";
-
 const BACKEND_API_URL = "https://credoconnect.onrender.com/api";
 const DONATION_NUMBER = "0798491209";
-
-if (window.supabase?.createClient) {
-  window.db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-} else {
-  console.error("Supabase library is missing.");
-}
 
 /* 2. HELPERS */
 
