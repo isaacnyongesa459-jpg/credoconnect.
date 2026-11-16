@@ -120,7 +120,7 @@ function showPage(pageId) {
     link.classList.toggle("active", link.dataset.page === pageId);
   });
 
-  $("sidebar")?.classList.remove("open");
+  closeMobileMenu();
 
   if (pageId === "transactions") {
     loadTransactions();
@@ -160,8 +160,26 @@ document.querySelectorAll("[data-go]").forEach(button => {
 
 /* 5. MOBILE MENU */
 
+function closeMobileMenu() {
+  $("sidebar")?.classList.remove("open");
+  document.body.classList.remove("mobile-menu-open");
+  $("menuToggle")?.setAttribute("aria-expanded", "false");
+  $("menuToggle")?.setAttribute("aria-label", "Open navigation menu");
+}
 listen($("menuToggle"), "click", () => {
-  $("sidebar")?.classList.toggle("open");
+  const sidebar = $("sidebar");
+  const isOpen = sidebar?.classList.toggle("open") || false;
+  document.body.classList.toggle("mobile-menu-open", isOpen);
+  $("menuToggle")?.setAttribute("aria-expanded", String(isOpen));
+  $("menuToggle")?.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeMobileMenu();
+});
+document.addEventListener("click", event => {
+  if (document.body.classList.contains("mobile-menu-open") &&
+      !$("sidebar")?.contains(event.target) &&
+      !$("menuToggle")?.contains(event.target)) closeMobileMenu();
 });
 
 /* 6. LIGHT AND DARK THEME */
