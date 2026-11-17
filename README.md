@@ -36,6 +36,10 @@ Before enabling commercial sales, obtain and verify authorized aggregator docume
 
 The prior repository tracked an `.env` file. This rebuild removes it from the working tree and ignores `.env` and other environment-specific files, with `.env.example` as the only permitted exception. Removing the file in a new commit will not erase earlier Git history or invalidate credentials; rotate any active credentials that may ever have been committed or published, and review repository history before production use. No existing environment values are copied into this codebase.
 
-## Deployment status
+## GitHub Pages frontend
 
-No production service or provider integration has been deployed or verified. Configure Render, managed PostgreSQL/Neon, and a static host such as Vercel only after the required user-owned service settings, migrations, and provider approvals are ready. This repository does not claim commercial readiness.
+The `.github/workflows/pages.yml` workflow builds `client/` on pushes to `main` and deploys the static artifact to GitHub Pages. Vite uses the repository name as the project-site base path, and hash routing avoids Pages server rewrite requirements. The Pages site serves the frontend only; the API is not deployed there, so catalogue and purchase functions remain unavailable. Do not put API credentials or other secrets in frontend configuration.
+
+GitHub Pages must be configured to use **GitHub Actions** as its build and deployment source. Once the workflow completes, the project site URL follows `https://<owner>.github.io/<repository>/`.
+
+No backend production service or provider integration has been deployed or verified. Configure Render, managed PostgreSQL/Neon, and provider connections separately after the required service settings, migrations, approvals, and sandbox validation are ready. This repository does not claim commercial readiness.

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { BrowserRouter, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { HashRouter, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Activity, ArrowDownLeft, ArrowRight, Bell, Check, ChevronDown, CircleHelp, Clock3, Command, CreditCard, FileClock, Gift, Heart, LayoutDashboard, Menu, Moon, PackageSearch, Radio, Search, ShieldCheck, Smartphone, Sun, Users, Wifi, X } from 'lucide-react';
 import './styles.css';
 
@@ -113,5 +113,5 @@ function Bundles({network,setNetwork,category,setCategory,selectedNetwork,select
 function EmptyPage({icon:Icon,title,text}) { return <div className="page-empty"><div className="empty-icon"><Icon size={23}/></div><div className="eyebrow muted-eyebrow">YOUR CREDOCONNECT</div><h1>{title}</h1><p>{text}</p><div className="coming-label"><span className="status-dot"/> IN THE WORKS</div></div>; }
 function HelpPage(){return <div className="help-page"><div className="eyebrow muted-eyebrow">SUPPORT</div><h1>Help that stays connected.</h1><p>We’re building customer support and order tracking. Live purchase assistance will be added with provider integration.</p><div className="help-card"><div className="help-card-icon"><CircleHelp size={19}/></div><div><strong>Need help with this preview?</strong><p>Bundle purchases and payments are not enabled yet. No money can be charged from this site preview.</p></div></div><div className="help-card"><div className="help-card-icon"><ShieldCheck size={19}/></div><div><strong>Why are bundles unavailable?</strong><p>Actual Safaricom and Airtel catalogues require an authorized commercial provider connection. We do not invent package listings or prices.</p></div></div></div>}
 
-function App(){return <BrowserRouter><AppShell/></BrowserRouter>}
+function App(){return <HashRouter><AppShell/></HashRouter>}
 export default App;
