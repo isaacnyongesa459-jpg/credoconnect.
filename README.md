@@ -29,7 +29,7 @@ Requirements: Node.js 20 or newer and npm.
 
 ## WhatsApp conversation flow
 
-The backend exposes `POST /api/whatsapp/messages` for JSON adapter testing and `POST /api/whatsapp/webhook` for an authorized WhatsApp provider. The webhook accepts a normalized `{ "from": "0712345678", "message": "Hi" }` payload and also recognizes the common Meta Cloud API inbound message shape. `GET /api/whatsapp/webhook` supports Meta-style verification with `WHATSAPP_VERIFY_TOKEN`; configure `WHATSAPP_WEBHOOK_SECRET` when the provider can send the matching header.
+The intended customer-facing WhatsApp Business number is `+255798491209`, configured through `WHATSAPP_BUSINESS_PHONE_NUMBER`. The backend exposes `POST /api/whatsapp/messages` for JSON adapter testing and `POST /api/whatsapp/webhook` for an authorized WhatsApp provider. The webhook accepts a normalized `{ "from": "0712345678", "message": "Hi" }` payload and also recognizes the common Meta Cloud API inbound message shape. `GET /api/whatsapp/webhook` supports Meta-style verification with `WHATSAPP_VERIFY_TOKEN`; configure `WHATSAPP_WEBHOOK_SECRET` when the provider can send the matching header.
 
 Customers can start with `Hi`, `Hello`, `Start`, or `Menu`, navigate by number, use `Back` and `Cancel`, or type requests such as “I want Safaricom data bundles.” The menu intentionally offers only CredoConnect’s supported SMS, data, and voice products; it does not offer airtime. Conversation state is stored in the `WhatsappSession` Prisma model when `DATABASE_URL` is configured and falls back to an expiring in-memory store for local tests. The response is provider-agnostic (`to`, `reply`, and `state`); an authorized WhatsApp outbound adapter still needs to deliver the reply.
 
