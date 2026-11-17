@@ -1,21 +1,18 @@
-
 {
-  "name": "credoconnect-backend",
-  "version": "1.0.0",
-  "description": "Backend server for CredoConnect",
-  "main": "src/server.js",
+  "name": "credoconnect",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Safaricom and Airtel bundle marketplace — provider integrations require verified authorization and credentials.",
+  "packageManager": "pnpm@10.4.1",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
-  },
-  "dependencies": {
-    "axios": "^1.6.8",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "pg": "^8.16.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.0"
+    "dev": "corepack pnpm --parallel --filter @credo/client --filter @credo/server dev",
+    "build": "corepack pnpm --filter @credo/client build",
+    "start": "corepack pnpm --filter @credo/server start",
+    "db:generate": "corepack pnpm --filter @credo/server prisma:generate",
+    "db:migrate": "corepack pnpm --filter @credo/server prisma:migrate",
+    "check": "corepack pnpm --filter @credo/client check && corepack pnpm --filter @credo/server check && corepack pnpm --filter @credo/server test"
   }
 }
