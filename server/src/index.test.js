@@ -49,6 +49,38 @@ test('network endpoint returns Safaricom and Airtel only', async () => {
   assert.deepEqual(body.networks.map((item) => item.name), ['Safaricom', 'Airtel']);
 });
 
+test('WhatsApp message endpoint returns the numbered welcome menu', async () => {
+  const { response, body } = await json('/api/whatsapp/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ from: '0712345678', message: 'Hi' }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal(body.state, 'main');
+  assert.match(body.reply, /1\. Buy Internet Bundles/);
+});
+
+test('WhatsApp bundle selection stays unavailable until a provider is configured', async () => {
+  await json('/api/whatsapp/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ from: '0722222222', message: 'Start' }),
+  });
+  await json('/api/whatsapp/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ from: '0722222222', message: '1' }),
+  });
+  const { response, body } = await json('/api/whatsapp/messages', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ from: '0722222222', message: '1' }),
+  });
+  assert.equal(response.status, 200);
+  assert.equal(body.state, 'network');
+  assert.match(body.reply, /authorized provider catalogue/i);
+});
+
 test('catalogue rejects unsupported network/category combinations', async () => {
   const { response } = await json('/api/products?network=unsupported&category=data');
   assert.equal(response.status, 400);

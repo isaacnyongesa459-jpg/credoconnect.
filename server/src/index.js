@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { z } = require('zod');
 const path = require('node:path');
+const { createPrismaSessionStore, createWhatsAppConversation } = require('./whatsapp');
 
 const app = express();
 const port = Number(process.env.PORT || 5000);
@@ -38,16 +39,21 @@ const catalogueQuery = z.object({
   network: z.enum(['safaricom', 'airtel']),
   category: z.enum(['sms', 'data', 'voice']),
 });
-app.get('/api/products', (req, res) => {
-  const parsed = catalogueQuery.safeParse(req.query);
-  if (!parsed.success) return res.status(400).json({ error: 'Select a supported network and bundle category.' });
+
+async function getCatalogue({ network, category }) {
   // Intentionally no static catalogue: only an authorized provider adapter may return saleable products.
-  return res.status(503).json({
+  return {
     available: false,
     products: [],
     reason: 'provider_not_configured',
     message: 'Live products are unavailable until an authorized provider connection has been verified.',
-  });
+  };
+}
+
+app.get('/api/products', (req, res) => {
+  const parsed = catalogueQuery.safeParse(req.query);
+  if (!parsed.success) return res.status(400).json({ error: 'Select a supported network and bundle category.' });
+  return getCatalogue(parsed.data).then((catalogue) => res.status(503).json(catalogue));
 });
 
 app.post('/api/orders', (_req, res) => res.status(503).json({
@@ -55,6 +61,62 @@ app.post('/api/orders', (_req, res) => res.status(503).json({
   reason: 'commerce_not_enabled',
   message: 'Purchases are disabled until authorized bundle delivery and verified payment processing are configured.',
 }));
+
+let whatsappSessionStore;
+if (process.env.DATABASE_URL && process.env.WHATSAPP_SESSION_STORE !== 'memory') {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    whatsappSessionStore = createPrismaSessionStore(new PrismaClient());
+  } catch (error) {
+    console.warn(`WhatsApp database sessions unavailable: ${error.message}`);
+  }
+}
+const whatsappConversation = createWhatsAppConversation({
+  catalogueLoader: getCatalogue,
+  sessionStore: whatsappSessionStore,
+});
+
+function extractWhatsAppMessage(payload = {}) {
+  if (payload.from || payload.phone || payload.message || payload.text) {
+    return {
+      from: payload.from || payload.phone,
+      text: typeof payload.message === 'string' ? payload.message : (payload.text || payload.message?.text?.body),
+    };
+  }
+  const message = payload.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+  return { from: message?.from, text: message?.text?.body };
+}
+
+app.get('/api/whatsapp/webhook', (req, res) => {
+  const expected = process.env.WHATSAPP_VERIFY_TOKEN;
+  if (!expected || req.query['hub.verify_token'] !== expected) return res.sendStatus(403);
+  return res.type('text/plain').send(String(req.query['hub.challenge'] || ''));
+});
+
+app.post('/api/whatsapp/webhook', express.urlencoded({ extended: false }), async (req, res, next) => {
+  try {
+    if (process.env.WHATSAPP_WEBHOOK_SECRET && req.get('x-whatsapp-webhook-secret') !== process.env.WHATSAPP_WEBHOOK_SECRET) {
+      return res.sendStatus(403);
+    }
+    const { from, text } = extractWhatsAppMessage(req.body);
+    const result = await whatsappConversation.handle(from, text);
+    if (!result.ok) return res.status(400).json(result);
+    return res.json({ to: from, reply: result.message, state: result.state });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+app.post('/api/whatsapp/messages', async (req, res, next) => {
+  try {
+    const { from, text } = extractWhatsAppMessage(req.body);
+    const result = await whatsappConversation.handle(from, text);
+    if (!result.ok) return res.status(400).json(result);
+    return res.json({ to: from, reply: result.message, state: result.state });
+  } catch (error) {
+    return next(error);
+  }
+});
 
 app.use((err, _req, res, _next) => {
   console.error('Request failed:', err.message);

@@ -11,6 +11,7 @@ CredoConnect is a Kenyan bundle marketplace for Safaricom and Airtel, limited to
 - `client/app.js`: plain browser JavaScript for navigation, network/category choices, and honest unavailable states.
 - `client/credo-icon.svg` and `manifest.webmanifest`: logo mark and PWA metadata.
 - `server/src/index.js`: Node.js/Express backend with health, network catalogue, rate limiting, security headers, and fail-closed product/order endpoints.
+- `server/src/whatsapp.js`: provider-agnostic WhatsApp conversation state machine with numbered menus, natural-language intent shortcuts, session expiry, phone validation, and safe confirmation handling.
 - `server/prisma/schema.prisma` plus `server/prisma/migrations/`: PostgreSQL model and initial migration.
 - `TODO.md` and `plan.md`: scope, progress, and blocked provider prerequisites.
 
@@ -25,6 +26,14 @@ Requirements: Node.js 20 or newer and npm.
 5. Run API tests with `npm test`.
 
 `GET /api/health` reports service/integration readiness. `GET /api/networks` lists only Safaricom and Airtel. `GET /api/products?network=safaricom&category=data` deliberately returns HTTP 503 and no products until a verified provider adapter exists. `POST /api/orders` is disabled until payment and delivery are verifiably connected.
+
+## WhatsApp conversation flow
+
+The backend exposes `POST /api/whatsapp/messages` for JSON adapter testing and `POST /api/whatsapp/webhook` for an authorized WhatsApp provider. The webhook accepts a normalized `{ "from": "0712345678", "message": "Hi" }` payload and also recognizes the common Meta Cloud API inbound message shape. `GET /api/whatsapp/webhook` supports Meta-style verification with `WHATSAPP_VERIFY_TOKEN`; configure `WHATSAPP_WEBHOOK_SECRET` when the provider can send the matching header.
+
+Customers can start with `Hi`, `Hello`, `Start`, or `Menu`, navigate by number, use `Back` and `Cancel`, or type requests such as “I want Safaricom data bundles.” The menu intentionally offers only CredoConnect’s supported SMS, data, and voice products; it does not offer airtime. Conversation state is stored in the `WhatsappSession` Prisma model when `DATABASE_URL` is configured and falls back to an expiring in-memory store for local tests. The response is provider-agnostic (`to`, `reply`, and `state`); an authorized WhatsApp outbound adapter still needs to deliver the reply.
+
+The current catalogue, payment, and fulfilment integrations are not configured. Therefore the bot never invents package names/prices, initiates a charge, or reports a successful purchase. After provider onboarding, connect `getCatalogue`, payment initiation, verified callbacks, and delivery confirmation through the existing backend order lifecycle before enabling commerce.
 
 ## GitHub Pages
 

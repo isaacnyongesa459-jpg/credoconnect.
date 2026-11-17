@@ -41,17 +41,17 @@ enum DeliveryStatus {
 }
 
 model User {
-  id           String   @id @default(cuid())
+  id           String               @id @default(cuid())
   fullName     String
-  email        String   @unique
-  phone        String   @unique
+  email        String               @unique
+  phone        String               @unique
   passwordHash String
-  role         Role     @default(CUSTOMER)
-  active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  role         Role                 @default(CUSTOMER)
+  active       Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
   orders       Order[]
-  recipients  FavouriteRecipient[]
+  recipients   FavouriteRecipient[]
 }
 
 model Network {
@@ -80,6 +80,7 @@ model Product {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   orders          Order[]
+
   @@unique([networkId, providerId])
   @@index([networkId, category, available])
 }
@@ -106,19 +107,21 @@ model Order {
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
   paymentEvents     PaymentEvent[]
+
   @@index([userId, createdAt])
   @@index([paymentStatus, deliveryStatus])
 }
 
 model PaymentEvent {
-  id           String   @id @default(cuid())
-  orderId      String
-  order        Order    @relation(fields: [orderId], references: [id])
-  provider     String
-  eventId      String   @unique
-  eventType    String
-  payload      Json
-  receivedAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id])
+  provider   String
+  eventId    String   @unique
+  eventType  String
+  payload    Json
+  receivedAt DateTime @default(now())
+
   @@index([orderId, receivedAt])
 }
 
@@ -129,5 +132,17 @@ model FavouriteRecipient {
   name      String
   phone     String
   createdAt DateTime @default(now())
+
   @@unique([userId, phone])
+}
+
+model WhatsappSession {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  state     Json
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
 }
