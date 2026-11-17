@@ -100,7 +100,7 @@ Status meanings: **Not started**, **In progress**, **Blocked**, **Complete**. Co
 - Keep credentials exclusively in backend environment variables. Never expose M-Pesa consumer secrets/passkeys, provider API credentials, database passwords, or JWT secrets.
 
 ## 16. Technology stack — In progress
-- Frontend: React.js, Vite, JavaScript, Tailwind CSS, React Router, Axios, Lucide React, responsive mobile-first design.
+- Frontend: plain HTML, CSS, and browser JavaScript; responsive mobile-first design with no framework or frontend build step.
 - Backend: Node.js, Express.js, JavaScript, REST API, secure JWT or session-based authentication.
 - Database: PostgreSQL and Prisma ORM.
 - Payments: Safaricom M-Pesa Daraja API, STK Push, callbacks, transaction verification, sandbox testing.

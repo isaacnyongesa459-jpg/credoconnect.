@@ -2,13 +2,14 @@
 
 | Path | Purpose |
 | --- | --- |
-| `client/src/App.jsx` | React route shell and current marketplace/customer screens; never embeds secret values. |
-| `client/src/styles.css` | Shared brand system, responsive layout, and light/dark themes. |
-| `client/src/main.jsx` | React root entry point. |
-| `client/vite.config.js` | Vite setup and local `/api` proxy to Express. |
-| `client/public/manus-routes.json` | Current website route manifest. |
-| `server/src/index.js` | Express API boundary, security middleware, health/network endpoints, and honest unavailable purchase responses. |
-| `server/prisma/schema.prisma` | PostgreSQL persistence model for identity, catalogue, orders, and payment-event tracking. |
-| `server/prisma/seed.js` | Idempotently seeds the two supported network identities only, never products or prices. |
-| `.env.example` | Safe names and placeholders for backend configuration; contains no credentials. |
-| `plan.md`, `TODO.md` | Implementation decisions and requirement-by-requirement delivery status. |
+| `index.html` | Static frontend entry, used by GitHub Pages and served by Express. |
+| `client/app.js` | Plain browser JavaScript for navigation, themes, network/category selection, and safe unavailable states. |
+| `client/styles.css` | Responsive design system, light/dark themes, and mobile layouts. |
+| `client/credo-icon.svg` | Vector C/signal brand mark. |
+| `manifest.webmanifest` | Installable web-app metadata with relative Pages paths. |
+| `server/src/index.js` | Node/Express API, frontend serving, security middleware, and disabled commerce endpoints. |
+| `server/prisma/schema.prisma` | PostgreSQL model for user, network, product, order, and payment-event foundations. |
+| `server/prisma/migrations/` | Database migration history. |
+| `server/prisma/seed.js` | Idempotent Safaricom/Airtel network seed only; no fabricated products. |
+| `.env.example` | Safe environment-variable names and placeholders. |
+| `plan.md`, `TODO.md` | Implementation direction and requirement-by-requirement progress. |

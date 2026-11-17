@@ -20,6 +20,21 @@ async function json(path, options) {
   return { response, body: await response.json() };
 }
 
+test('root serves the plain HTML storefront', async () => {
+  const response = await fetch(`${base}/`);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type'), /text\/html/);
+  assert.match(await response.text(), /CredoConnect/);
+});
+
+test('public client assets are served without exposing server source', async () => {
+  const asset = await fetch(`${base}/client/styles.css`);
+  assert.equal(asset.status, 200);
+  assert.match(asset.headers.get('content-type'), /text\/css/);
+  const source = await fetch(`${base}/server/src/index.js`);
+  assert.notEqual(source.status, 200);
+});
+
 test('health states that commerce integrations are not configured', async () => {
   const { response, body } = await json('/api/health');
   assert.equal(response.status, 200);

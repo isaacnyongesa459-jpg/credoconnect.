@@ -6,9 +6,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { z } = require('zod');
+const path = require('node:path');
 
 const app = express();
 const port = Number(process.env.PORT || 5000);
+const projectRoot = path.resolve(__dirname, '../..');
+const clientRoot = path.join(projectRoot, 'client');
 const supportedNetworks = Object.freeze([
   { id: 'safaricom', name: 'Safaricom', country: 'KE', enabled: true },
   { id: 'airtel', name: 'Airtel', country: 'KE', enabled: true },
@@ -16,9 +19,12 @@ const supportedNetworks = Object.freeze([
 
 app.disable('x-powered-by');
 app.use(helmet());
-app.use(cors({ origin: process.env.APP_ORIGIN || 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: process.env.APP_ORIGIN || 'http://localhost:5000', credentials: true }));
 app.use(express.json({ limit: '32kb' }));
 app.use('/api', rateLimit({ windowMs: 60_000, limit: 120, standardHeaders: 'draft-7', legacyHeaders: false }));
+app.use('/client', express.static(clientRoot, { fallthrough: false }));
+
+app.get('/', (_req, res) => res.sendFile(path.join(projectRoot, 'index.html')));
 
 app.get('/api/health', (_req, res) => res.json({
   status: 'ok',

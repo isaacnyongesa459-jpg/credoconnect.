@@ -1,18 +1,14 @@
 {
   "name": "credoconnect",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "Safaricom and Airtel bundle marketplace — provider integrations require verified authorization and credentials.",
-  "packageManager": "pnpm@10.4.1",
-  "engines": {
-    "node": ">=20"
-  },
+  "description": "CredoConnect plain HTML/CSS/JavaScript frontend with a Node.js/Express backend.",
+  "workspaces": ["server"],
   "scripts": {
-    "dev": "corepack pnpm --parallel --filter @credo/client --filter @credo/server dev",
-    "build": "corepack pnpm --filter @credo/client build",
-    "start": "corepack pnpm --filter @credo/server start",
-    "db:generate": "corepack pnpm --filter @credo/server prisma:generate",
-    "db:migrate": "corepack pnpm --filter @credo/server prisma:migrate",
-    "check": "corepack pnpm --filter @credo/client check && corepack pnpm --filter @credo/server check && corepack pnpm --filter @credo/server test"
+    "dev": "npm run dev --workspace=@credo/server",
+    "start": "npm run start --workspace=@credo/server",
+    "test": "npm run test --workspace=@credo/server",
+    "db:generate": "npm run prisma:generate --workspace=@credo/server",
+    "db:migrate": "npm run prisma:migrate --workspace=@credo/server"
   }
 }
