@@ -30,6 +30,7 @@
     catalogueLoading: false,
     catalogueKey: '',
     stkLoading: false,
+    selectedProductId: null,
   };
   const app = document.getElementById('app');
   const toast = document.getElementById('toast');
@@ -95,8 +96,8 @@
   async function requestSandboxStk(productId) {
     if (state.stkLoading) return;
     const product = state.products.find((item) => item.id === productId);
-    const payerPhone = document.getElementById('payerPhone')?.value.trim();
-    const recipientPhone = document.getElementById('recipientPhone')?.value.trim() || payerPhone;
+    const payerPhone = document.getElementById('checkoutPayerPhone')?.value.trim();
+    const recipientPhone = document.getElementById('checkoutRecipientPhone')?.value.trim() || payerPhone;
     if (!product) return announce('Select a valid mock package.');
     if (!payerPhone) return announce('Enter the M-Pesa payer phone number first.');
     state.stkLoading = true;
@@ -150,7 +151,7 @@
   }
 
   function overview() {
-    return `<section class="hero"><div class="hero-copy"><div class="eyebrow"><i></i> YOUR CONNECTION, SIMPLIFIED</div><h1>Your network.<br><span>Your bundles.</span></h1><p>Find the right bundle for the right number. One easy place to stay connected.</p><div class="hero-buttons"><button class="primary-btn" data-category="data">Explore bundles ${icon('arrow')}</button><a class="plain-link" href="https://credoconnect-jumrldgs.manus.space/mpesa-test.html">Test M-Pesa sandbox STK ${icon('arrow')}</a><span>${icon('shield')} Secure checkout is being prepared</span></div></div>
+    return `<section class="hero"><div class="hero-copy"><div class="eyebrow"><i></i> YOUR CONNECTION, SIMPLIFIED</div><h1>Your network.<br><span>Your bundles.</span></h1><p>Find the right bundle for the right number. One easy place to stay connected.</p><div class="hero-buttons"><button class="primary-btn" data-category="data">Explore bundles ${icon('arrow')}</button><span>${icon('shield')} Select a package to send a sandbox STK prompt</span></div></div>
       <div class="hero-art" aria-hidden="true"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="orb-core">${logo(true)}<small>ONE CONNECTION</small></div><i class="orb-dot d1"></i><i class="orb-dot d2"></i><i class="orb-dot d3"></i><span class="orb-signal">⌁</span></div>
       <div class="hero-foot"><span>TWO NETWORKS. YOUR CHOICE.</span><span><i class="net-mark sm">S</i><i class="net-mark ar">A</i></span></div></section>
       <section class="section-head"><div><small>PICK YOUR CONNECTION</small><h2>Choose a network</h2><p>Start with the number you want to receive a bundle.</p></div><span class="two-supported"><i></i> 2 supported networks</span></section>
@@ -163,15 +164,16 @@
   function bundlesPage() {
     const n = currentNetwork();
     const c = currentCategory();
-    const cards = state.catalogueLoading ? '<div class="mock-loading">Loading local catalogue…</div>' : state.products.map((product) => `<article class="product-card"><div><span class="mock-label">LOCAL MOCK</span><h3>${product.name}</h3><p>${product.quantity} · ${product.validity}</p></div><strong>KSh ${product.priceKes}</strong><button class="primary-btn product-select" data-product="${product.id}">Select</button></article>`).join('');
+    const cards = state.catalogueLoading ? '<div class="mock-loading">Loading local catalogue…</div>' : state.products.map((product) => `<article class="product-card ${state.selectedProductId === product.id ? 'selected' : ''}"><div><span class="mock-label">LOCAL MOCK</span><h3>${product.name}</h3><p>${product.quantity} · ${product.validity}</p></div><strong>KSh ${product.priceKes}</strong><button class="primary-btn product-select" data-product="${product.id}">${state.selectedProductId === product.id ? 'Chosen' : 'Choose package'}</button></article>`).join('');
+    const selected = state.products.find((product) => product.id === state.selectedProductId);
+    const checkout = selected ? `<section class="sandbox-checkout"><div><small>SANDBOX CHECKOUT</small><h2>${selected.name} · KSh ${selected.priceKes}</h2><p>Enter the payer number, then send the test STK prompt without leaving this page.</p></div><label><span>M-Pesa payer phone</span><input id="checkoutPayerPhone" type="tel" placeholder="07XX XXX XXX" autocomplete="tel" required></label><label><span>Recipient number (optional)</span><input id="checkoutRecipientPhone" type="tel" placeholder="07XX XXX XXX" autocomplete="tel"></label><div class="sandbox-checkout-actions"><button class="primary-btn" data-action="send-stk" data-product="${selected.id}" ${state.stkLoading ? 'disabled' : ''}>${state.stkLoading ? 'Sending…' : 'Send sandbox STK'} ${icon('arrow')}</button><button class="plain-link" data-action="close-checkout">Cancel</button></div></section>` : '';
     return `<section class="catalogue-title"><div><small>BROWSE CATALOGUE</small><h1>${c.name} <span>for your number.</span></h1><p>Choose your network and see eligible options.</p></div><span class="offline-badge mock-badge"><i></i> Local mock catalogue</span></section>
       <section class="filters"><div><small>NETWORK</small><div class="segments">${networks.map((net) => `<button class="${state.network === net.id ? 'chosen' : ''}" data-network="${net.id}"><i class="segment-mark ${net.tone}">${net.mark}</i>${net.name}</button>`).join('')}</div></div>
       <label><small>BUNDLE TYPE</small><span class="select-wrap"><select id="categorySelect">${categories.map((cat) => `<option value="${cat.id}" ${state.category === cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}</select><b>⌄</b></span></label>
-      <label class="search-wrap"><small>M-PESA PAYER PHONE</small><input type="tel" id="payerPhone" placeholder="07XX XXX XXX" autocomplete="tel" required><span>Sandbox STK recipient</span></label>
-      <label class="search-wrap"><small>AIRTIME RECIPIENT (OPTIONAL)</small><input type="tel" id="recipientPhone" placeholder="07XX XXX XXX" autocomplete="tel"><span>Test mode only</span></label></section>
+      </section>
       <div class="catalogue-row"><div><i class="network-logo tiny ${n.tone}">${n.mark}</i><b>${n.name}</b><i class="vbar"></i><span>${c.name}</span></div><span>${state.products.length} mock products</span></div>
       <div class="mock-notice"><b>Local UI test data only.</b> These names, prices, and packages are fictional and cannot be purchased.</div>
-      <section class="product-grid">${cards || '<div class="mock-loading">No mock products for this selection.</div>'}</section>
+      <section class="product-grid">${cards || '<div class="mock-loading">No mock products for this selection.</div>'}</section>${checkout}
       <div class="safe-checkout">${icon('shield')} <span><b>Sandbox test mode.</b> Selecting a package sends an STK prompt for its mock KSh amount; no order or database record is created.</span></div>`;
   }
 
@@ -204,7 +206,9 @@
     if (page) { state.page = page.dataset.page; state.menuOpen = false; render(); window.scrollTo(0, 0); return; }
     if (category) { openBundles(category.dataset.category); return; }
     const product = event.target.closest('[data-product]');
-    if (product) { requestSandboxStk(product.dataset.product); return; }
+    if (product) { state.selectedProductId = product.dataset.product; render(); return; }
+    if (action?.dataset.action === 'send-stk') { requestSandboxStk(action.dataset.product); return; }
+    if (action?.dataset.action === 'close-checkout') { state.selectedProductId = null; render(); return; }
     if (network) { state.network = network.dataset.network; render(); return; }
     if (action?.dataset.action === 'theme') { setTheme(state.theme === 'dark' ? 'light' : 'dark'); render(); return; }
     if (action?.dataset.action === 'open-menu') { state.menuOpen = true; render(); return; }
