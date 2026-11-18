@@ -1,0 +1,12 @@
+
+/* Local mock catalogue UI */
+.mock-badge { color: #7a4b00; background: #fff3cd; }
+.mock-notice { margin: 1rem 0; padding: .85rem 1rem; border: 1px solid #e2b95b; border-radius: .75rem; background: #fff8e6; color: #654100; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
+.product-card { display: flex; flex-direction: column; gap: .65rem; padding: 1.1rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow); }
+.product-card h3 { margin: .25rem 0; }
+.product-card p { margin: 0; color: var(--muted); }
+.product-card strong { font-size: 1.25rem; color: var(--green); }
+.product-card .product-select { align-self: flex-start; margin-top: auto; }
+.mock-label { display: inline-block; font-size: .68rem; letter-spacing: .08em; font-weight: 800; color: #7a4b00; }
+.mock-loading { padding: 2rem 1rem; text-align: center; color: var(--muted); }

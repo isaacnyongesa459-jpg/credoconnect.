@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+node_modules/
+
+# Local Manus/Webdev metadata
+.manus-webdev/
