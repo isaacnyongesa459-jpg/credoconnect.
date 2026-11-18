@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CredoConnect M-Pesa Sandbox Test</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; background: #f4f7fb; color: #10233f; }
+    main { max-width: 36rem; margin: 3rem auto; padding: 2rem; background: white; border-radius: 1rem; box-shadow: 0 12px 35px #10233f18; }
+    h1 { margin-top: 0; }
+    .warning { padding: .85rem 1rem; background: #fff4d6; border: 1px solid #e6b94a; border-radius: .6rem; }
+    label { display: block; margin-top: 1rem; font-weight: 650; }
+    input { display: block; width: 100%; box-sizing: border-box; margin-top: .35rem; padding: .75rem; border: 1px solid #b8c4d4; border-radius: .5rem; font: inherit; }
+    button { margin-top: 1.25rem; width: 100%; padding: .8rem; border: 0; border-radius: .5rem; background: #087f5b; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #result { white-space: pre-wrap; margin-top: 1rem; padding: .8rem; border-radius: .5rem; background: #eef3f8; min-height: 2rem; }
+    .small { color: #52637a; font-size: .9rem; }
+    a { color: #087f5b; }
+  </style>
+</head>
+<body>
+  <main>
+    <p><a href="./">← Back to CredoConnect</a></p>
+    <h1>M-Pesa sandbox STK Push</h1>
+    <p class="warning"><strong>Sandbox only.</strong> This sends a Daraja test prompt. It cannot charge a live M-Pesa account, create an order, write to a database, or trigger Vinnie airtime.</p>
+    <p class="small">Use a Safaricom sandbox test number and amount. The Daraja credentials stay on the server and are never sent to the browser.</p>
+    <form id="stk-form">
+      <label for="payerPhone">M-Pesa test phone number</label>
+      <input id="payerPhone" name="payerPhone" type="tel" inputmode="tel" placeholder="0712345678" autocomplete="tel" required>
+      <label for="recipientPhone">Test airtime recipient number</label>
+      <input id="recipientPhone" name="recipientPhone" type="tel" inputmode="tel" placeholder="0712345678" autocomplete="tel" required>
+      <label for="amount">Amount (KES)</label>
+      <input id="amount" name="amount" type="number" min="1" max="250000" step="1" placeholder="10" required>
+      <button id="submit" type="submit">Send sandbox STK prompt</button>
+    </form>
+    <div id="result" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    const form = document.getElementById('stk-form');
+    const button = document.getElementById('submit');
+    const result = document.getElementById('result');
+    const apiBase = window.location.hostname.endsWith('github.io') ? 'https://credoconnect-jumrldgs.manus.space' : '';
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      result.textContent = 'Requesting sandbox STK prompt…';
+      try {
+        const response = await fetch(`${apiBase}/api/test/mpesa/stk-push`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ payerPhone: form.payerPhone.value, recipientPhone: form.recipientPhone.value, amount: Number(form.amount.value) }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'The sandbox request failed.');
+        result.textContent = `${data.message}\nCheckout request: ${data.checkoutRequestId}\nDatabase persisted: ${data.persisted}\nVinnie dispatch: ${data.vinnieDispatch}`;
+      } catch (error) {
+        result.textContent = `Error: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
