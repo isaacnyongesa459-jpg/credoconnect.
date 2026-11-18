@@ -29,6 +29,7 @@
     products: [],
     catalogueLoading: false,
     catalogueKey: '',
+    stkLoading: false,
   };
   const app = document.getElementById('app');
   const toast = document.getElementById('toast');
@@ -91,6 +92,32 @@
     }
   }
 
+  async function requestSandboxStk(productId) {
+    if (state.stkLoading) return;
+    const product = state.products.find((item) => item.id === productId);
+    const payerPhone = document.getElementById('payerPhone')?.value.trim();
+    const recipientPhone = document.getElementById('recipientPhone')?.value.trim() || payerPhone;
+    if (!product) return announce('Select a valid mock package.');
+    if (!payerPhone) return announce('Enter the M-Pesa payer phone number first.');
+    state.stkLoading = true;
+    announce(`Requesting a sandbox STK prompt for KSh ${product.priceKes}…`);
+    try {
+      const apiBase = window.location.hostname.endsWith('github.io') ? 'https://credoconnect-jumrldgs.manus.space' : '';
+      const response = await fetch(`${apiBase}/api/test/mpesa/stk-push`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ payerPhone, recipientPhone, amount: product.priceKes }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'The sandbox STK request failed.');
+      announce(`${data.message} Checkout: ${data.checkoutRequestId}`);
+    } catch (error) {
+      announce(error.message);
+    } finally {
+      state.stkLoading = false;
+    }
+  }
+
   function pageTitle() {
     return ({ overview: 'Your connection, at a glance', bundles: 'Find your next bundle', transactions: 'Your transactions', recipients: 'Saved recipients', account: 'Your account', help: 'How can we help?' })[state.page] || 'CredoConnect';
   }
@@ -140,11 +167,12 @@
     return `<section class="catalogue-title"><div><small>BROWSE CATALOGUE</small><h1>${c.name} <span>for your number.</span></h1><p>Choose your network and see eligible options.</p></div><span class="offline-badge mock-badge"><i></i> Local mock catalogue</span></section>
       <section class="filters"><div><small>NETWORK</small><div class="segments">${networks.map((net) => `<button class="${state.network === net.id ? 'chosen' : ''}" data-network="${net.id}"><i class="segment-mark ${net.tone}">${net.mark}</i>${net.name}</button>`).join('')}</div></div>
       <label><small>BUNDLE TYPE</small><span class="select-wrap"><select id="categorySelect">${categories.map((cat) => `<option value="${cat.id}" ${state.category === cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}</select><b>⌄</b></span></label>
-      <label class="search-wrap"><small>RECIPIENT (OPTIONAL)</small><input type="tel" id="recipientPhone" placeholder="07XX XXX XXX" autocomplete="tel"><span>UI testing only</span></label></section>
+      <label class="search-wrap"><small>M-PESA PAYER PHONE</small><input type="tel" id="payerPhone" placeholder="07XX XXX XXX" autocomplete="tel" required><span>Sandbox STK recipient</span></label>
+      <label class="search-wrap"><small>AIRTIME RECIPIENT (OPTIONAL)</small><input type="tel" id="recipientPhone" placeholder="07XX XXX XXX" autocomplete="tel"><span>Test mode only</span></label></section>
       <div class="catalogue-row"><div><i class="network-logo tiny ${n.tone}">${n.mark}</i><b>${n.name}</b><i class="vbar"></i><span>${c.name}</span></div><span>${state.products.length} mock products</span></div>
       <div class="mock-notice"><b>Local UI test data only.</b> These names, prices, and packages are fictional and cannot be purchased.</div>
       <section class="product-grid">${cards || '<div class="mock-loading">No mock products for this selection.</div>'}</section>
-      <div class="safe-checkout">${icon('shield')} <span><b>Test mode only.</b> Selecting a package previews the checkout flow and does not charge or create an order.</span></div>`;
+      <div class="safe-checkout">${icon('shield')} <span><b>Sandbox test mode.</b> Selecting a package sends an STK prompt for its mock KSh amount; no order or database record is created.</span></div>`;
   }
 
   function emptyPage(kicker, title, text, symbol = 'history', actionLabel = 'Browse mock bundles') {
@@ -176,7 +204,7 @@
     if (page) { state.page = page.dataset.page; state.menuOpen = false; render(); window.scrollTo(0, 0); return; }
     if (category) { openBundles(category.dataset.category); return; }
     const product = event.target.closest('[data-product]');
-    if (product) { announce('Mock package selected. Checkout is disabled in local catalogue mode.'); return; }
+    if (product) { requestSandboxStk(product.dataset.product); return; }
     if (network) { state.network = network.dataset.network; render(); return; }
     if (action?.dataset.action === 'theme') { setTheme(state.theme === 'dark' ? 'light' : 'dark'); render(); return; }
     if (action?.dataset.action === 'open-menu') { state.menuOpen = true; render(); return; }
