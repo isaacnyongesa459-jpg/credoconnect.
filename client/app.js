@@ -123,7 +123,7 @@
   }
 
   function overview() {
-    return `<section class="hero"><div class="hero-copy"><div class="eyebrow"><i></i> YOUR CONNECTION, SIMPLIFIED</div><h1>Your network.<br><span>Your bundles.</span></h1><p>Find the right bundle for the right number. One easy place to stay connected.</p><div class="hero-buttons"><button class="primary-btn" data-category="data">Explore bundles ${icon('arrow')}</button><span>${icon('shield')} Secure checkout is being prepared</span></div></div>
+    return `<section class="hero"><div class="hero-copy"><div class="eyebrow"><i></i> YOUR CONNECTION, SIMPLIFIED</div><h1>Your network.<br><span>Your bundles.</span></h1><p>Find the right bundle for the right number. One easy place to stay connected.</p><div class="hero-buttons"><button class="primary-btn" data-category="data">Explore bundles ${icon('arrow')}</button><a class="plain-link" href="https://credoconnect-jumrldgs.manus.space/mpesa-test.html">Test M-Pesa sandbox STK ${icon('arrow')}</a><span>${icon('shield')} Secure checkout is being prepared</span></div></div>
       <div class="hero-art" aria-hidden="true"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="orb-core">${logo(true)}<small>ONE CONNECTION</small></div><i class="orb-dot d1"></i><i class="orb-dot d2"></i><i class="orb-dot d3"></i><span class="orb-signal">⌁</span></div>
       <div class="hero-foot"><span>TWO NETWORKS. YOUR CHOICE.</span><span><i class="net-mark sm">S</i><i class="net-mark ar">A</i></span></div></section>
       <section class="section-head"><div><small>PICK YOUR CONNECTION</small><h2>Choose a network</h2><p>Start with the number you want to receive a bundle.</p></div><span class="two-supported"><i></i> 2 supported networks</span></section>
