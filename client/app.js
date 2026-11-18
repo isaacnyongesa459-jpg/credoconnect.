@@ -10,12 +10,25 @@
     { id: 'sms', name: 'SMS bundles', icon: '✉', detail: 'Stay in touch, message by message.' },
     { id: 'voice', name: 'Voice minutes', icon: '◖', detail: 'Minutes for the conversations that matter.' },
   ];
+  const staticMockProducts = [
+    { id: 'mock-sf-data-100', network: 'safaricom', category: 'data', name: 'Mock 1GB Daily', quantity: '1GB', priceKes: 50, validity: '24 hours' },
+    { id: 'mock-sf-data-250', network: 'safaricom', category: 'data', name: 'Mock 5GB Weekly', quantity: '5GB', priceKes: 250, validity: '7 days' },
+    { id: 'mock-sf-sms-20', network: 'safaricom', category: 'sms', name: 'Mock 200 SMS', quantity: '200 SMS', priceKes: 20, validity: '7 days' },
+    { id: 'mock-sf-voice-50', network: 'safaricom', category: 'voice', name: 'Mock 50 Minutes', quantity: '50 minutes', priceKes: 50, validity: '24 hours' },
+    { id: 'mock-ar-data-100', network: 'airtel', category: 'data', name: 'Mock 1.5GB Daily', quantity: '1.5GB', priceKes: 100, validity: '24 hours' },
+    { id: 'mock-ar-data-300', network: 'airtel', category: 'data', name: 'Mock 10GB Weekly', quantity: '10GB', priceKes: 300, validity: '7 days' },
+    { id: 'mock-ar-sms-30', network: 'airtel', category: 'sms', name: 'Mock 300 SMS', quantity: '300 SMS', priceKes: 30, validity: '7 days' },
+    { id: 'mock-ar-voice-75', network: 'airtel', category: 'voice', name: 'Mock 75 Minutes', quantity: '75 minutes', priceKes: 75, validity: '24 hours' },
+  ];
   const state = {
     page: 'overview',
     category: 'data',
     network: 'safaricom',
     theme: localStorage.getItem('credo-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
     menuOpen: false,
+    products: [],
+    catalogueLoading: false,
+    catalogueKey: '',
   };
   const app = document.getElementById('app');
   const toast = document.getElementById('toast');
@@ -53,7 +66,29 @@
   function openBundles(category = 'data') {
     state.category = category;
     state.page = 'bundles';
+    state.catalogueKey = '';
     render();
+  }
+
+  async function loadCatalogue() {
+    const key = `${state.network}:${state.category}`;
+    if (state.catalogueLoading || state.catalogueKey === key) return;
+    state.catalogueLoading = true;
+    state.products = [];
+    render();
+    try {
+      const response = await fetch(`/api/products?network=${encodeURIComponent(state.network)}&category=${encodeURIComponent(state.category)}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Catalogue unavailable.');
+      state.products = Array.isArray(data.products) ? data.products : [];
+      state.catalogueKey = key;
+    } catch (error) {
+      state.products = staticMockProducts.filter((product) => product.network === state.network && product.category === state.category);
+      state.catalogueKey = key;
+    } finally {
+      state.catalogueLoading = false;
+      render();
+    }
   }
 
   function pageTitle() {
@@ -101,13 +136,15 @@
   function bundlesPage() {
     const n = currentNetwork();
     const c = currentCategory();
-    return `<section class="catalogue-title"><div><small>BROWSE CATALOGUE</small><h1>${c.name} <span>for your number.</span></h1><p>Choose your network and see eligible options.</p></div><span class="offline-badge"><i></i> Provider not connected</span></section>
+    const cards = state.catalogueLoading ? '<div class="mock-loading">Loading local catalogue…</div>' : state.products.map((product) => `<article class="product-card"><div><span class="mock-label">LOCAL MOCK</span><h3>${product.name}</h3><p>${product.quantity} · ${product.validity}</p></div><strong>KSh ${product.priceKes}</strong><button class="primary-btn product-select" data-product="${product.id}">Select</button></article>`).join('');
+    return `<section class="catalogue-title"><div><small>BROWSE CATALOGUE</small><h1>${c.name} <span>for your number.</span></h1><p>Choose your network and see eligible options.</p></div><span class="offline-badge mock-badge"><i></i> Local mock catalogue</span></section>
       <section class="filters"><div><small>NETWORK</small><div class="segments">${networks.map((net) => `<button class="${state.network === net.id ? 'chosen' : ''}" data-network="${net.id}"><i class="segment-mark ${net.tone}">${net.mark}</i>${net.name}</button>`).join('')}</div></div>
       <label><small>BUNDLE TYPE</small><span class="select-wrap"><select id="categorySelect">${categories.map((cat) => `<option value="${cat.id}" ${state.category === cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}</select><b>⌄</b></span></label>
-      <label class="search-wrap"><small>RECIPIENT (OPTIONAL)</small><input type="tel" id="recipientPhone" placeholder="07XX XXX XXX" autocomplete="tel" disabled><span>Coming soon</span></label></section>
-      <div class="catalogue-row"><div><i class="network-logo tiny ${n.tone}">${n.mark}</i><b>${n.name}</b><i class="vbar"></i><span>${c.name}</span></div><span>0 products</span></div>
-      <section class="empty-catalogue"><div class="empty-graphic"><span>${c.icon}</span><i></i><b></b></div><span class="status-chip"><i></i> LIVE CATALOGUE NOT CONNECTED</span><h2>We’re preparing this catalogue.</h2><p>CredoConnect will show current ${n.name} ${c.name.toLowerCase()} only after an authorized provider connection is verified. We won’t show sample packages or guessed prices.</p><div class="trust-points"><span>${icon('shield')} Real products, verified availability</span><span>◷ Coming after provider setup</span></div></section>
-      <div class="safe-checkout">${icon('shield')} <span><b>Your trust comes first.</b> No payment prompt or purchase is started from this site.</span></div>`;
+      <label class="search-wrap"><small>RECIPIENT (OPTIONAL)</small><input type="tel" id="recipientPhone" placeholder="07XX XXX XXX" autocomplete="tel"><span>UI testing only</span></label></section>
+      <div class="catalogue-row"><div><i class="network-logo tiny ${n.tone}">${n.mark}</i><b>${n.name}</b><i class="vbar"></i><span>${c.name}</span></div><span>${state.products.length} mock products</span></div>
+      <div class="mock-notice"><b>Local UI test data only.</b> These names, prices, and packages are fictional and cannot be purchased.</div>
+      <section class="product-grid">${cards || '<div class="mock-loading">No mock products for this selection.</div>'}</section>
+      <div class="safe-checkout">${icon('shield')} <span><b>Test mode only.</b> Selecting a package previews the checkout flow and does not charge or create an order.</span></div>`;
   }
 
   function emptyPage(kicker, title, text, symbol = 'history') {
@@ -128,6 +165,7 @@
       : helpPage();
     app.innerHTML = shell(content);
     document.title = `${pageTitle()} | CredoConnect`;
+    if (state.page === 'bundles') loadCatalogue();
   }
 
   app.addEventListener('click', (event) => {
@@ -137,6 +175,8 @@
     const action = event.target.closest('[data-action]');
     if (page) { state.page = page.dataset.page; state.menuOpen = false; render(); window.scrollTo(0, 0); return; }
     if (category) { openBundles(category.dataset.category); return; }
+    const product = event.target.closest('[data-product]');
+    if (product) { announce('Mock package selected. Checkout is disabled in local catalogue mode.'); return; }
     if (network) { state.network = network.dataset.network; render(); return; }
     if (action?.dataset.action === 'theme') { setTheme(state.theme === 'dark' ? 'light' : 'dark'); render(); return; }
     if (action?.dataset.action === 'open-menu') { state.menuOpen = true; render(); return; }

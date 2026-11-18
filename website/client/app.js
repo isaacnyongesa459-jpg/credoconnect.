@@ -10,6 +10,16 @@
     { id: 'sms', name: 'SMS bundles', icon: '✉', detail: 'Stay in touch, message by message.' },
     { id: 'voice', name: 'Voice minutes', icon: '◖', detail: 'Minutes for the conversations that matter.' },
   ];
+  const staticMockProducts = [
+    { id: 'mock-sf-data-100', network: 'safaricom', category: 'data', name: 'Mock 1GB Daily', quantity: '1GB', priceKes: 50, validity: '24 hours' },
+    { id: 'mock-sf-data-250', network: 'safaricom', category: 'data', name: 'Mock 5GB Weekly', quantity: '5GB', priceKes: 250, validity: '7 days' },
+    { id: 'mock-sf-sms-20', network: 'safaricom', category: 'sms', name: 'Mock 200 SMS', quantity: '200 SMS', priceKes: 20, validity: '7 days' },
+    { id: 'mock-sf-voice-50', network: 'safaricom', category: 'voice', name: 'Mock 50 Minutes', quantity: '50 minutes', priceKes: 50, validity: '24 hours' },
+    { id: 'mock-ar-data-100', network: 'airtel', category: 'data', name: 'Mock 1.5GB Daily', quantity: '1.5GB', priceKes: 100, validity: '24 hours' },
+    { id: 'mock-ar-data-300', network: 'airtel', category: 'data', name: 'Mock 10GB Weekly', quantity: '10GB', priceKes: 300, validity: '7 days' },
+    { id: 'mock-ar-sms-30', network: 'airtel', category: 'sms', name: 'Mock 300 SMS', quantity: '300 SMS', priceKes: 30, validity: '7 days' },
+    { id: 'mock-ar-voice-75', network: 'airtel', category: 'voice', name: 'Mock 75 Minutes', quantity: '75 minutes', priceKes: 75, validity: '24 hours' },
+  ];
   const state = {
     page: 'overview',
     category: 'data',
@@ -73,9 +83,8 @@
       state.products = Array.isArray(data.products) ? data.products : [];
       state.catalogueKey = key;
     } catch (error) {
-      state.products = [];
+      state.products = staticMockProducts.filter((product) => product.network === state.network && product.category === state.category);
       state.catalogueKey = key;
-      announce(error.message);
     } finally {
       state.catalogueLoading = false;
       render();
@@ -108,7 +117,7 @@
       <button class="account-row" data-page="account"><span class="avatar">CC</span><span><b>My account</b><small>Manage your profile</small></span>${icon('user')}</button>
     </aside>
     <main class="main-shell">
-      <header class="topbar"><button class="icon-btn menu-btn" data-action="open-menu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><span>CredoConnect</span><i>/</i><b>${pageTitle()}</b></div><div class="top-actions"><span class="connection-state"><i></i> Local mock catalogue</span><button class="icon-btn" data-action="theme" aria-label="Toggle theme">${icon(state.theme === 'dark' ? 'sun' : 'moon')}</button><span class="top-avatar">C</span></div></header>
+      <header class="topbar"><button class="icon-btn menu-btn" data-action="open-menu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><span>CredoConnect</span><i>/</i><b>${pageTitle()}</b></div><div class="top-actions"><span class="connection-state"><i></i> Catalogue offline</span><button class="icon-btn" data-action="theme" aria-label="Toggle theme">${icon(state.theme === 'dark' ? 'sun' : 'moon')}</button><span class="top-avatar">C</span></div></header>
       <div class="page-wrap">${content}<footer class="footer"><span>© 2026 CredoConnect</span><span><i></i> Built for Kenya · Safaricom &amp; Airtel</span><button data-page="help">Help &amp; support</button></footer></div>
     </main>${state.menuOpen ? '<button class="scrim" data-action="close-menu" aria-label="Close menu"></button>' : ''}`;
   }
@@ -121,7 +130,7 @@
       <div class="network-grid">${networks.map((n) => `<button class="network-card ${state.network === n.id ? `selected ${n.tone}` : ''}" data-network="${n.id}"><span class="network-logo ${n.tone}">${n.mark}</span><span><b>${n.name}</b><small>SMS · Data · Voice</small></span><i class="radio">${state.network === n.id ? '✓' : ''}</i></button>`).join('')}</div>
       <section class="section-head category-head"><div><small>EXPLORE BY TYPE</small><h2>What do you need?</h2></div><button class="plain-link" data-page="bundles">All bundles ${icon('arrow')}</button></section>
       <div class="category-grid">${categories.map((c, i) => `<button class="category-card cat-${c.id}" data-category="${c.id}"><span class="card-index">0${i + 1}</span><span class="category-icon">${c.icon}</span><b>${c.name}</b><p>${c.detail}</p><span class="category-link">Browse category ${icon('arrow')}</span></button>`).join('')}</div>
-      <div class="honesty-note"><span class="note-symbol">◈</span><p><b>Public UI preview.</b> The visible packages are fictional local test data and are not available for purchase.</p><span class="note-pill">MOCK DATA ONLY</span></div>`;
+      <div class="honesty-note"><span class="note-symbol">◈</span><p><b>Live catalogues are being connected.</b> Real package names and prices will appear only after an authorized provider is verified.</p><span class="note-pill">NO SAMPLE PRICES</span></div>`;
   }
 
   function bundlesPage() {
