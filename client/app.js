@@ -130,7 +130,7 @@
       <div class="network-grid">${networks.map((n) => `<button class="network-card ${state.network === n.id ? `selected ${n.tone}` : ''}" data-network="${n.id}"><span class="network-logo ${n.tone}">${n.mark}</span><span><b>${n.name}</b><small>SMS · Data · Voice</small></span><i class="radio">${state.network === n.id ? '✓' : ''}</i></button>`).join('')}</div>
       <section class="section-head category-head"><div><small>EXPLORE BY TYPE</small><h2>What do you need?</h2></div><button class="plain-link" data-page="bundles">All bundles ${icon('arrow')}</button></section>
       <div class="category-grid">${categories.map((c, i) => `<button class="category-card cat-${c.id}" data-category="${c.id}"><span class="card-index">0${i + 1}</span><span class="category-icon">${c.icon}</span><b>${c.name}</b><p>${c.detail}</p><span class="category-link">Browse category ${icon('arrow')}</span></button>`).join('')}</div>
-      <div class="honesty-note"><span class="note-symbol">◈</span><p><b>Live catalogues are being connected.</b> Real package names and prices will appear only after an authorized provider is verified.</p><span class="note-pill">NO SAMPLE PRICES</span></div>`;
+      <div class="honesty-note"><span class="note-symbol">◈</span><p><b>Public test catalogue.</b> These packages are fictional and available for interface testing only. No payment or order is created.</p><span class="note-pill">MOCK DATA ONLY</span></div>`;
   }
 
   function bundlesPage() {
@@ -147,8 +147,8 @@
       <div class="safe-checkout">${icon('shield')} <span><b>Test mode only.</b> Selecting a package previews the checkout flow and does not charge or create an order.</span></div>`;
   }
 
-  function emptyPage(kicker, title, text, symbol = 'history') {
-    return `<section class="empty-page"><div class="empty-page-icon">${icon(symbol)}</div><small>${kicker}</small><h1>${title}</h1><p>${text}</p><span class="in-progress"><i></i> IN THE WORKS</span></section>`;
+  function emptyPage(kicker, title, text, symbol = 'history', actionLabel = 'Browse mock bundles') {
+    return `<section class="empty-page"><div class="empty-page-icon">${icon(symbol)}</div><small>${kicker}</small><h1>${title}</h1><p>${text}</p><button class="primary-btn" data-page="bundles">${actionLabel} ${icon('arrow')}</button><span class="in-progress"><i></i> TEST MODE</span></section>`;
   }
 
   function helpPage() {
@@ -159,9 +159,9 @@
     setTheme(state.theme);
     const content = state.page === 'overview' ? overview()
       : state.page === 'bundles' ? bundlesPage()
-      : state.page === 'transactions' ? emptyPage('YOUR CREDOCONNECT', 'Your purchase history will appear here', 'When purchasing is enabled, follow payment, delivery status and receipts here.')
-      : state.page === 'recipients' ? emptyPage('YOUR CREDOCONNECT', 'Keep your favourite people close', 'Saved recipients will be available when secure customer accounts are connected.', 'heart')
-      : state.page === 'account' ? emptyPage('YOUR ACCOUNT', 'Your account is being prepared', 'Profile, phone verification and account settings will be available when secure sign-in is connected.', 'user')
+      : state.page === 'transactions' ? emptyPage('TEST HISTORY', 'No test selections yet', 'Your selected mock packages are not saved because this public preview does not use a database.', 'history', 'Choose a mock bundle')
+      : state.page === 'recipients' ? emptyPage('TEST RECIPIENTS', 'Use the recipient field during testing', 'Enter a Kenyan test number on the Browse bundles screen. It is used only to preview the interface and is never submitted.', 'heart', 'Open bundle tester')
+      : state.page === 'account' ? emptyPage('PUBLIC PREVIEW', 'No account is required', 'Sign-in and customer accounts are not enabled in this safe catalogue preview. You can browse and test the interface immediately.', 'user', 'Start browsing')
       : helpPage();
     app.innerHTML = shell(content);
     document.title = `${pageTitle()} | CredoConnect`;
