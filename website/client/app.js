@@ -112,10 +112,27 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'The sandbox STK request failed.');
       announce(`${data.message} Checkout: ${data.checkoutRequestId}`);
+      void pollSandboxStatus(data.checkoutRequestId);
     } catch (error) {
       announce(error.message);
     } finally {
       state.stkLoading = false;
+    }
+  }
+
+  async function pollSandboxStatus(checkoutRequestId) {
+    const apiBase = window.location.hostname.endsWith('github.io') ? 'https://credoconnect-jumrldgs.manus.space' : '';
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      try {
+        const response = await fetch(`${apiBase}/api/test/mpesa/status/${encodeURIComponent(checkoutRequestId)}`);
+        if (!response.ok) return;
+        const status = await response.json();
+        if (status.status === 'SUCCEEDED') return announce(`Sandbox payment callback succeeded: ${status.resultDescription}`);
+        if (status.status === 'FAILED') return announce(`Sandbox STK callback failed (${status.resultCode}): ${status.resultDescription}`);
+      } catch {
+        return;
+      }
     }
   }
 

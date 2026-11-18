@@ -97,7 +97,14 @@ async function initiateSandboxStk({ payerPhone, amount, recipientPhone }) {
     error.providerResponse = body;
     throw error;
   }
-  sandboxStkTests.set(body.CheckoutRequestID, { recipientPhone: recipient, amountKes: numericAmount, createdAt: Date.now() });
+  sandboxStkTests.set(body.CheckoutRequestID, {
+    recipientPhone: recipient,
+    amountKes: numericAmount,
+    createdAt: Date.now(),
+    status: 'PENDING',
+    callbackResultCode: null,
+    callbackResultDescription: null,
+  });
   return body;
 }
 
@@ -134,16 +141,40 @@ app.post('/api/test/mpesa/stk-push', async (req, res) => {
       message: result.CustomerMessage || 'STK Push sent. Check the sandbox phone prompt.',
     });
   } catch (error) {
-    console.error('Sandbox STK request failed:', error.message);
-    return res.status(502).json({ error: error.message || 'Could not start sandbox STK Push.' });
+    const provider = error.providerResponse || {};
+    const providerMessage = provider.errorMessage || provider.ResponseDescription || provider.CustomerMessage;
+    const message = providerMessage || error.message || 'Could not start sandbox STK Push.';
+    const validationError = /valid Kenyan|whole KSh|configuration is incomplete|not enabled/i.test(message);
+    console.error('Sandbox STK request failed:', JSON.stringify({ message, errorCode: provider.errorCode || provider.errorCode, responseCode: provider.ResponseCode }));
+    return res.status(validationError ? 400 : 502).json({
+      error: message,
+      providerCode: provider.errorCode || provider.ResponseCode || null,
+      testMode: true,
+    });
   }
+});
+
+app.get('/api/test/mpesa/status/:checkoutRequestId', (req, res) => {
+  const checkoutRequestId = String(req.params.checkoutRequestId || '');
+  const test = sandboxStkTests.get(checkoutRequestId);
+  if (!test) return res.status(404).json({ error: 'Sandbox checkout request not found or expired.' });
+  return res.json({
+    testMode: true,
+    status: test.status,
+    resultCode: test.callbackResultCode,
+    resultDescription: test.callbackResultDescription,
+  });
 });
 
 app.post('/api/payments/mpesa/callback', (req, res) => {
   const callback = req.body?.Body?.stkCallback;
   if (!callback?.CheckoutRequestID) return res.status(400).json({ ResultCode: 1, ResultDesc: 'Invalid sandbox callback.' });
   const test = sandboxStkTests.get(callback.CheckoutRequestID);
-  if (test) sandboxStkTests.delete(callback.CheckoutRequestID);
+  if (test) {
+    test.status = Number(callback.ResultCode) === 0 ? 'SUCCEEDED' : 'FAILED';
+    test.callbackResultCode = callback.ResultCode;
+    test.callbackResultDescription = callback.ResultDesc || 'Sandbox callback received.';
+  }
   console.log('Sandbox M-Pesa callback acknowledged; no database write or Vinnie dispatch.', callback.ResultCode);
   return res.json({ ResultCode: 0, ResultDesc: 'Accepted for sandbox testing.' });
 });
